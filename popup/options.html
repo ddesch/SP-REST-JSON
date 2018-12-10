@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+		<link rel="stylesheet" href="options.css"/>
+	</head>
+	<body>
+<table>
+	<tr>
+		<td class="option">
+			<div class="onoffswitch">
+				<label for="useAddon">
+					<input type="checkbox" value="1" id="useAddon" name="" />
+					<span class="slider"></span>
+				</label>
+			</div>
+		</td>
+		<td class="label">
+			<span class="on">Use in this Tab</span>
+			<span class="off">Don't use in this Tab</span>
+		</td>
+	</tr>
+	<tr>
+		<td class="option">
+			<div class="onoffswitch">
+				<label for="refreshOnChange">
+					<input type="checkbox" name="refreshOnChange" id="refreshOnChange" />
+					<span class="slider"></span>
+				</label>
+			</div>
+		</td>
+		<td class="label">
+			<span class="on">Automatic page reload on <b>odata</b> change</span>
+			<span class="off">No automatic page reload on <b>odata</b> change</span>
+		</td>
+	</tr>
+</table>
+		
+		
+		<fieldset id="odataSwitch">
+			<legend>Set odata value for accept header</legend>
+			<br/>
+			<select></select>
+		</fieldset>
+		
+		<script src="options.js"></script>
+	</body>
+</html>

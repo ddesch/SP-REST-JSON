@@ -1,0 +1,80 @@
+body {
+	margin: 0;
+	padding: 0.5em;
+	font-size: 12px;
+}
+
+.option {
+	width: 65px;
+}
+
+.label {
+	width: 250px;
+	display: inline-block;
+}
+
+.onoffswitch input {
+	visibility: hidden;
+}
+
+.onoffswitch {
+    margin: 0;
+	width: 60px;
+    height: 20px;
+	background: #666;
+    border-radius: 25px;
+    position: relative;
+	display: inline-block;
+}
+
+.onoffswitch label {
+	width: 60px;
+    height: 20px;
+	display: inline-block;
+	cursor: pointer;
+}
+
+/**
+ * Create the line for the circle to move across
+ */
+.onoffswitch label:before {
+    content: '';
+    position: absolute;
+	top: 9.5px;
+    left: 7px;
+    width: 45px;
+    height: 2px;
+    background: #111;
+}
+
+/**
+ * Create the circle to click
+ */
+/*.onoffswitch label {*/
+.onoffswitch .slider {
+    display: block;
+	width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    transition: all .5s ease;
+    position: absolute;
+    top: 9px;
+    top: 4.5px;
+    z-index: 1;
+    left: 12px;
+    left: 6px;
+    background: #ddd;
+}
+
+/**
+ * Create the click event for the checkbox
+ */
+.onoffswitch input[type=checkbox]:checked + .slider {
+    left: 84px;
+    left: 42px;
+    background: #26ca28;
+}
+
+#odataSwitch {
+	margin: 1em 0em;
+}
