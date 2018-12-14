@@ -65,15 +65,12 @@ var browserName = 'firefox';
 				var iSelectedIndex = objMessage.iODataChosen;
 			}
 			for(var i = 0; i < objMessage.arrODataOptions.length; i++) {
-				var strOption = '';
-				if(i == iSelectedIndex) {
-					strOption = '<option selected="" value="' + String(i) + '">' + objMessage.arrODataOptions[i] + '</option>';
-				}
-				else {
-					strOption = '<option value="' + String(i) + '">' + objMessage.arrODataOptions[i] + '</option>';
-				}
-				selectOdataSwitch.insertAdjacentHTML('beforeEnd', strOption);
+				var opt = document.createElement(option);
+				opt.innerText = objMessage.arrODataOptions[i];
+				opt.value = String(i);
+				selectOdataSwitch.appendChild(opt);
 			}
+			selectOdataSwitch.selectedIndex = iSelectedIndex;
 		}
 		if(objMessage.bRefreshOnChange != undefined) {
 			inputChkboxRefreshOnOdataChange.checked = objMessage.bRefreshOnChange;
