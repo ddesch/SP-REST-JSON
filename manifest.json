@@ -6,8 +6,7 @@
 	,"author": "Daniel Desch"
 	,"homepage_url": "https://github.com/ddesch/SP-REST-JSON/tree/master/"
 	,"icons": {
-		"48": "icons/48/sp_logo_active.png"
-		,"96": "icons/96/sp_logo_active.png"
+		"64": "icons/64/active.png"
 	}
 	,"browser_action": {
 		"default_icon": "icons/32/sp_logo_active.png"
