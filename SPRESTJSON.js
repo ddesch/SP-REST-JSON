@@ -81,13 +81,9 @@ var publicToggleIcon;
 	function updateIcon() {
 		browser.browserAction.setIcon({
 			path: objTabSettings[iTabId].bJSON ? {
-				24: "icons/24/sp_logo_active.png",
-				32: "icons/32/sp_logo_active.png",
-				48: "icons/48/sp_logo_active.png"
+				64: "icons/64/active.png"
 			} : {
-				24: "icons/24/sp_logo_inactive.png",
-				32: "icons/32/sp_logo_inactive.png",
-				48: "icons/48/sp_logo_inactive.png"
+				64: "icons/64/inactive.png"
 			}
 		});
 		browser.browserAction.setTitle({

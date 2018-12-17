@@ -61,18 +61,26 @@ var browserName = 'firefox';
 		}
 		var iSelectedIndex = 0;
 		if(objMessage.arrODataOptions != undefined) {
-			if(objMessage.iODataChosen != undefined) {
-				var iSelectedIndex = objMessage.iODataChosen;
-			}
+			// if(objMessage.iODataChosen != undefined) {
+			// 	var iSelectedIndex = objMessage.iODataChosen;
+			// }
 			for(var i = 0; i < objMessage.arrODataOptions.length; i++) {
-				var strOption = '';
-				if(i == iSelectedIndex) {
-					strOption = '<option selected="" value="' + String(i) + '">' + objMessage.arrODataOptions[i] + '</option>';
-				}
-				else {
-					strOption = '<option value="' + String(i) + '">' + objMessage.arrODataOptions[i] + '</option>';
-				}
-				selectOdataSwitch.insertAdjacentHTML('beforeEnd', strOption);
+				//var strOption = '';
+				//if(i == iSelectedIndex) {
+				//	strOption = '<option selected="" value="' + String(i) + '">' + objMessage.arrODataOptions[i] + '</option>';
+				//}
+				//else {
+				//	strOption = '<option value="' + String(i) + '">' + objMessage.arrODataOptions[i] + '</option>';
+				//}
+				//selectOdataSwitch.insertAdjacentHTML('beforeEnd', strOption);
+				var opt = document.createElement('option');
+				opt.text = objMessage.arrODataOptions[i];
+				opt.value = String(i);
+				selectOdataSwitch.add(opt);
+
+			}
+			if(objMessage.iODataChosen != undefined && objMessage.iODataChosen < objMessage.arrODataOptions.length) {
+				selectOdataSwitch.selectedIndex = objMessage.iODataChosen;
 			}
 		}
 		if(objMessage.bRefreshOnChange != undefined) {
