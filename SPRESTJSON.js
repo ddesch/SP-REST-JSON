@@ -84,6 +84,7 @@ var publicToggleIcon;
 	}
 
 	function updateIcon() {
+<<<<<<< HEAD
 		if(objTabSettings[iTabId].bAcceptChanged) {
 			browser.browserAction.enable();
 			var strTooltip = 'Click to set options for SP REST JSON in this tab.\n\nCurrent options: ';
@@ -101,6 +102,13 @@ var publicToggleIcon;
 				var bRefreshOnChange = objTab.bRefreshOnChange;
 				var stroData = arrODataOptions[objTab.iODataChosen];
 				strTooltip += '\nAutomatic page reload on odata change: ' + bRefreshOnChange + '\noData option: ' + stroData;
+=======
+		browser.browserAction.setIcon({
+			path: objTabSettings[iTabId].bJSON ? {
+				64: "icons/64/active.png"
+			} : {
+				64: "icons/64/inactive.png"
+>>>>>>> 602445eca06c07f20a18a48385b0941fc4ef6936
 			}
 			else {
 				browser.browserAction.setIcon({

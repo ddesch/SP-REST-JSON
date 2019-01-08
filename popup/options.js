@@ -65,6 +65,7 @@ var browserName = 'firefox';
 			// 	var iSelectedIndex = objMessage.iODataChosen;
 			// }
 			for(var i = 0; i < objMessage.arrODataOptions.length; i++) {
+<<<<<<< HEAD
 				var opt = document.createElement('option');
 				opt.text = objMessage.arrODataOptions[i];
 				opt.value = String(i);
@@ -73,7 +74,14 @@ var browserName = 'firefox';
 			}
 			if(objMessage.iODataChosen != undefined && objMessage.iODataChosen < objMessage.arrODataOptions.length) {
 				selectOdataSwitch.selectedIndex = objMessage.iODataChosen;
+=======
+				var opt = document.createElement(option);
+				opt.innerText = objMessage.arrODataOptions[i];
+				opt.value = String(i);
+				selectOdataSwitch.appendChild(opt);
+>>>>>>> 602445eca06c07f20a18a48385b0941fc4ef6936
 			}
+			selectOdataSwitch.selectedIndex = iSelectedIndex;
 		}
 		if(objMessage.bRefreshOnChange != undefined) {
 			inputChkboxRefreshOnOdataChange.checked = objMessage.bRefreshOnChange;
