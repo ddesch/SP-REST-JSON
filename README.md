@@ -1,6 +1,19 @@
-# SP-REST-JSON
+# SP REST JSON
 WebExtension that modifies request header for SharePoint REST API calls to get JSON instead of XML feed.
 
 ### Available for
-* **Firefox:** https://addons.mozilla.org/de/firefox/addon/sp-rest-json/
+* **Firefox:** https://addons.mozilla.org/firefox/addon/sp-rest-json/
 * **Chrome:** https://chrome.google.com/webstore/detail/sp-rest-json/kcdolhjbipnfgefpjaopfbjbannphidh
+
+### Details
+Once a tab is active, the current URL is matched against the following strings:
+* /_api/web/
+* /_api/site/
+* /_api/sp.
+
+At a match the accept property in the request header is changed to 'application/json;odata=verbose'.
+
+In the menu the following options can be chosen:
+* application/json;odata=verbose
+* application/json;odata=minimalmetadata
+* application/json;odata=nometadata
