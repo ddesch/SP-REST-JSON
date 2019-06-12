@@ -75,7 +75,7 @@ function setValuesFromStorage(res) {
 		// Remove iOdataTab option per tab:
 		var arrKeys = Object.keys(objTabSettings);
 		for (var i = 0; i < arrKeys.length; i++) {
-			if (objTabSettings[arrKeys[i]].iOdataTab != undefined) {
+			if (objTabSettings[arrKeys[i]].iOdataTab !== undefined) {
 				delete objTabSettings[arrKeys[i]].iOdataTab;
 			}
 		}
@@ -98,7 +98,6 @@ function setValuesFromStorage(res) {
 	// listen to NEW tabs (empty and opened from bookmarks)
 	xBrowser.tabs.onCreated.addListener(function (tab) {
 		iWindowId = tab.windowid;
-		console.log(tab.id);
 		var strURL = tab.url;
 		createObjTab(tab.id, strURL);
 		if (tab.active) {
@@ -115,10 +114,9 @@ function setValuesFromStorage(res) {
 			if (tab.active) {
 				iCurrentTabId = iTabId;
 			}
-			if (objTabSettings[iCurrentTabId] == undefined) {
+			if (objTabSettings[iCurrentTabId] === undefined) {
 				createObjTab(iCurrentTabId, strURL);
 			}
-			console.log(objTabSettings[iCurrentTabId]);
 			if (tab.active) {
 				updateObjTabSettingsURL(iCurrentTabId, strURL);
 				updateIcon(iCurrentTabId);
@@ -133,7 +131,7 @@ function setValuesFromStorage(res) {
 			iWindowId = ev.windowId;
 			iCurrentTabId = ev.tabId;
 			var strURL = '';
-			if (objTabSettings[iCurrentTabId] == undefined) {
+			if (objTabSettings[iCurrentTabId] === undefined) {
 				createObjTab(iCurrentTabId, strURL);
 			}
 			callXBrowserFunc(xBrowser.tabs.get, iCurrentTabId, prepareUpdateTabURL, onError);
@@ -154,7 +152,6 @@ function setValuesFromStorage(res) {
 function initialiseSettingsForInstallingTab(activeTab) {
 	// activeTab is the array of the active tabs
 	if (activeTab !== undefined && activeTab.length > 0) {
-		console.log('initialiseSettingsForInstallingTab activeTab', activeTab)
 		iCurrentTabId = activeTab[0].id;
 		var strURL = activeTab[0].url;
 		createObjTab(iCurrentTabId, strURL);
@@ -163,7 +160,7 @@ function initialiseSettingsForInstallingTab(activeTab) {
 
 function createObjTab(iTabId, strURL) {
 	// console.log('createObjTab', objTabSettings);
-	if (iTabId != -1) {
+	if (iTabId !== -1) {
 		objTabSettings[iTabId] = {};
 		objTabSettings[iTabId].bUSE = true;
 		objTabSettings[iTabId].bTabXorGlobal = false; // true --> Tab Option, false --> Global Option
@@ -176,8 +173,7 @@ function createObjTab(iTabId, strURL) {
 
 function updateIcon(iTabId) {
 	if (iTabId !== undefined && iTabId > -1) {
-		console.log(iTabId);
-		// console.log('Gerade geöffneter Tab ist aktiv');
+		// console.log(iTabId);
 		var strTooltip = 'SP REST JSON\n\n';
 		var objTab = objTabSettings[iTabId];
 		if (objTab.strMatchedURL !== '') {
@@ -229,7 +225,6 @@ function updateIcon(iTabId) {
 
 function connected(objPort) {
 	objConnectedPort = objPort;
-	console.log('function connected(p)', objConnectedPort);
 	if (objConnectedPort.name === 'portTabOptions') {
 		objConnectedPort.postMessage({
 			arrOptionsAccept: arrOptionsAccept
@@ -239,13 +234,13 @@ function connected(objPort) {
 			, TabSettings: objTabSettings[iCurrentTabId]
 		});
 		objConnectedPort.onMessage.addListener(function (objMessage) {
-			if (objMessage.bUSE != undefined) {
+			if (objMessage.bUSE !== undefined) {
 				objTabSettings[iCurrentTabId].bUSE = objMessage.bUSE;
 			}
-			if (objMessage.iOdataTab != undefined) {
+			if (objMessage.iOdataTab !== undefined) {
 				objTabSettings[iCurrentTabId].iOdataTab = objMessage.iOdataTab;
 			}
-			if (objMessage.bTabXorGlobal != undefined) {
+			if (objMessage.bTabXorGlobal !== undefined) {
 				objTabSettings[iCurrentTabId].bTabXorGlobal = objMessage.bTabXorGlobal;
 			}
 			if (objMessage.bReload) {
@@ -255,7 +250,13 @@ function connected(objPort) {
 		});
 	}
 	else if (objConnectedPort.name === 'portGlobalOptions') {
-		setDefaultGlobalOptions();
+		objConnectedPort.onMessage.addListener(function (objMessage) {
+			if (objMessage.reloadFromStorage !== undefined && objMessage.reloadFromStorage === true) {	
+				callXBrowserFunc(xBrowser.storage.sync.get, undefined, setValuesFromStorage, onError);
+			} else if (objMessage.setDefaultOptions !== undefined && objMessage.setDefaultOptions === true) {
+				setDefaultGlobalOptions();
+			}
+		});
 	}
 }
 
@@ -298,10 +299,10 @@ function onError(error) {
 }
 
 function prepareUpdateTabURL(activeTab) {
-	console.log(activeTab);
+	// console.log(activeTab);
 	if (activeTab !== undefined) {
 		updateObjTabSettingsURL(activeTab.id, activeTab.url);
-		console.log(objTabSettings[iCurrentTabId]);
+		// console.log(objTabSettings[iCurrentTabId]);
 		updateIcon(iCurrentTabId);
 	}
 }
@@ -320,7 +321,7 @@ function updateObjTabSettingsURL(iTabId, strURL) {
 		objTabSettings[iTabId].strMatchedURL = '';
 		objTabSettings[iTabId].iOdataTab = 0;
 	}
-	console.log('objTabSettings[iTabId].strMatchedURL: ' + objTabSettings[iTabId].strMatchedURL);
+	// console.log('objTabSettings[iTabId].strMatchedURL: ' + objTabSettings[iTabId].strMatchedURL);
 }
 
 function callXBrowserFunc(objFunc, param, fnSuccess, fnError) {
@@ -342,7 +343,6 @@ function callXBrowserFunc(objFunc, param, fnSuccess, fnError) {
 
 // Rewrite the Accept header if needed...
 function rewriteRequestAcceptHeader(ev) {
-	console.log(ev);
 	var iTabIdEvent = ev.tabId;
 
 	if (ev.type === 'main_frame') {
@@ -350,8 +350,7 @@ function rewriteRequestAcceptHeader(ev) {
 		// Prevent crash while reloading / installing Add-on
 		if (ev.url) {
 			var strEventURL = ev.url;
-			console.log(objTabSettings[iTabIdEvent]);
-			if (objTabSettings[iTabIdEvent] == undefined) {
+			if (objTabSettings[iTabIdEvent] === undefined) {
 				createObjTab(iTabIdEvent, strEventURL);
 			} else {
 				updateObjTabSettingsURL(iTabIdEvent, strEventURL);
@@ -368,11 +367,11 @@ function rewriteRequestAcceptHeader(ev) {
 				if (objTabSettings[iTabIdEvent].bUSE) {
 					var bAccept = false;
 					for (var header of ev.requestHeaders) {
-						if (header.name.toLowerCase() == 'accept') {
+						if (header.name.toLowerCase() === 'accept') {
 							bAccept = true;
 							var strValue = header.value.toLowerCase();
 							if (strValue.indexOf('application/json') > -1) {
-								if (RegExpOData.test(strValue) == false) {
+								if (RegExpOData.test(strValue) === false) {
 									header.value = strAcceptValue;
 								}
 							}
@@ -388,7 +387,7 @@ function rewriteRequestAcceptHeader(ev) {
 			}
 		}
 	}
-	if (iCurrentTabId == iTabIdEvent) {
+	if (iCurrentTabId === iTabIdEvent) {
 		updateIcon();
 	}
 	return { requestHeaders: ev.requestHeaders };

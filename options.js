@@ -8,6 +8,7 @@ var portGlobalOptions;
 
 var xBrowser;
 var browserName;
+
 window.addEventListener('load', function(){
 	if (typeof browser === 'undefined') {
 		// If browser is not defined, the plugin was loaded into Google Chrome.
@@ -21,6 +22,7 @@ window.addEventListener('load', function(){
 		browserName = 'firefox'
 		xBrowser = browser;
 	}
+	portGlobalOptions = xBrowser.runtime.connect({ name: 'portGlobalOptions' });
 
 	if(browserName !== 'firefox') {
 		xBrowser.storage.sync.get(setValuesFromStorage);
@@ -180,10 +182,18 @@ function saveOptions(ev) {
 		arrFilterURLs.push(inputUrl.value);
 		arrFilterOptionsIndex.push(selectAccept.selectedIndex);
 	}
-	xBrowser.storage.sync.set({
+	var objOptions = {
 		arrFilterURLs: arrFilterURLs
 		,arrFilterOptionsIndex: arrFilterOptionsIndex
-	});
+	};
+	if(browserName !== 'firefox') {
+		xBrowser.storage.sync.set(objOptions, reloadFromStorage);
+	}
+	else {
+		xBrowser.storage.sync
+			.set(objOptions)
+			.then(reloadFromStorage);
+	}
 }
 
 function setValuesFromStorage(res) {
@@ -198,7 +208,9 @@ function setValuesFromStorage(res) {
 }
 
 function restoreDefault() {
-	portGlobalOptions = xBrowser.runtime.connect({ name: 'portGlobalOptions' });
+	portGlobalOptions.postMessage({
+		setDefaultOptions: true
+	});
 	portGlobalOptions.onMessage.addListener(function(objBgScript) {
 		if(objBgScript.reloadOptions != undefined  && objBgScript.reloadOptions === true) {
 			// Delete paragraph elements with filter options...
@@ -216,5 +228,11 @@ function restoreDefault() {
 					.then(setValuesFromStorage);
 			}
 		}
+	});
+}
+
+function reloadFromStorage(){
+	portGlobalOptions.postMessage({
+		reloadFromStorage: true
 	});
 }
