@@ -1,0 +1,35 @@
+{
+  "name": "sp-rest-json",
+  "version": "1.2.0",
+  "description": "Modifies request header for SharePoint REST API calls to get JSON instead of XML. For best results you'll need activated JSON viewer or a JSON viewer Add-on.",
+  "main": "gulpfile.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "gulp": "^4.0.2"
+  },
+  "devDependencies": {
+    "gulp-args": "^1.0.0",
+    "gulp-replace": "^1.0.0",
+    "gulp-zip": "^5.0.0"
+  },
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ddesch/SP-REST-JSON.git"
+  },
+  "keywords": [
+    "SharePoint",
+    "REST",
+    "JSON"
+  ],
+  "author": "Deschi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ddesch/SP-REST-JSON/issues"
+  },
+  "homepage": "https://github.com/ddesch/SP-REST-JSON#readme"
+}
