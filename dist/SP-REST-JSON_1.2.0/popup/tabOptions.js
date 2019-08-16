@@ -156,7 +156,7 @@ function checkTabs(tabs) {
 }
 
 function setLayout() {
-	console.log('strMatchedURL', strMatchedURL);
+	console.log('strMatchedURL.length', strMatchedURL, strMatchedURL.length);
 	console.log('bUSE', bUSE, 'bTabXorGlobal', bTabXorGlobal)
 	if (strMatchedURL === '') {
 		chkboxToggleUseAddon.disabled = true;

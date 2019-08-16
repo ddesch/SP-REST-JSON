@@ -1,0 +1,71 @@
+body {
+    width: 100%;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 12px !important;
+}
+
+.center {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.url, .accept {
+    width: 42%;
+    float: left;
+    margin: 0 4px 0 0;
+    padding: 0;
+}
+.controls {
+    width: 16%;
+}
+#options {
+    display: block;
+    height: 8em;
+    max-height: 10em;
+    margin-top: 0.3em;
+}
+
+#main {
+    width: 70%;
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.filterHeader, #main p {
+    margin: 0 0 0.5em 0;
+    height: 2em;
+}
+
+.default {
+    /* color: blue; */
+    /* color: #1A237E; */
+    color: #1e88e5;
+    /* color: #0D47A1; */
+}
+
+option {color: #000;}
+
+label[for=newAccept] {
+    margin-top: 1em;
+}
+
+.editOption, .saveOption, .removeOption {
+    margin: 0;
+    padding: 0;
+    background: none;
+    border: none;
+}
+
+select {
+    margin-right: 0;
+}
+
+.error {
+    border: 1px solid #f00 !important;
+}
+/*
+#btnOptions button {
+    width: 45%;
+    display: inline-block;
+}
+*/

@@ -29,17 +29,6 @@
 			"scripts": ["SPRESTJSON.js"]
 			,"persistent": true
 	}
-	,"content_scripts": [
-		{
-		  "matches": ["<all_urls>"],
-		  "run_at": "document_start",
-		  "css": ["JSONViewer/json-viewer.css"],
-		  "js": [
-			  "JSONViewer/json-viewer.js",
-			  "content.js"
-			]
-		}
-	 ]
 	,"permissions": [
 		"<all_urls>"
 		,"activeTab"

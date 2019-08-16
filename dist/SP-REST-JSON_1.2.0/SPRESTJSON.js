@@ -20,8 +20,7 @@ var objTabSettings = {};
 var arrOptionsAccept = [
 	'application/json;odata=verbose',
 	'application/json;odata=minimalmetadata',
-	'application/json;odata=nometadata',
-	'text/xml'
+	'application/json;odata=nometadata'
 ];
 var arrFilterURLs = [];
 var arrDefaultFilterURLs = [
@@ -98,42 +97,6 @@ function setValuesFromStorage(res) {
 		["blocking", "requestHeaders"]
 	);
 
-	xBrowser.webRequest.onHeadersReceived.addListener(
-		changeResponseHeaders, {
-			urls: ['<all_urls>']
-		},
-		["blocking", "responseHeaders"]
-	);
-
-	function changeResponseHeaders(ev) {
-		var iTabIdEvent = ev.tabId;
-		if (ev.type === 'main_frame' && ev.url) {
-			console.log('changeResponseHeaders main_frame', ev);
-			var strEventURL = ev.url;
-			if (objTabSettings[iTabIdEvent] === undefined) {
-				createObjTab(iTabIdEvent, strEventURL);
-			} else {
-				updateObjTabSettingsURL(iTabIdEvent, strEventURL);
-			}
-			if (objTabSettings[iTabIdEvent].strMatchedURL !== '' && objTabSettings[iTabIdEvent].bUSE) {
-				if (objTabSettings[iTabIdEvent].bTabXorGlobal === true) {
-					strAcceptValue = arrOptionsAccept[objTabSettings[iTabIdEvent].iOdataTab];
-					console.log('TAB', strAcceptValue);
-				}
-				else {
-					strAcceptValue = arrOptionsAccept[objTabSettings[iTabIdEvent].iOdataTab];
-					console.log('GLOBAL', strAcceptValue);
-				}
-				if (objTabSettings[iTabIdEvent].bUSE) {
-					if(strAcceptValue === 'text/xml') {
-						setHeader(ev.responseHeaders, 'Content-Type', 'text/xml');
-					}
-				}
-			}
-		}
-		return { responseHeaders: ev.responseHeaders };
-	}
-	
 	// listen to NEW tabs (empty and opened from bookmarks)
 	xBrowser.tabs.onCreated.addListener(function (tab) {
 		iWindowId = tab.windowid;
@@ -147,7 +110,6 @@ function setValuesFromStorage(res) {
 
 	// listen to tab URL changes
 	xBrowser.tabs.onUpdated.addListener(function (iTabId, changeInfo, tab) {
-		// console.log(changeInfo.status); // CRASH in EDGE!
 		if (changeInfo.status === 'complete') {
 			var strURL = tab.url;
 			iWindowId = tab.windowid;
@@ -160,18 +122,6 @@ function setValuesFromStorage(res) {
 			if (tab.active) {
 				updateObjTabSettingsURL(iCurrentTabId, strURL);
 				updateIcon(iCurrentTabId);
-
-				if (objTabSettings[iCurrentTabId].strMatchedURL !== '' && objTabSettings[iCurrentTabId].bUSE) {
-					if (objTabSettings[iCurrentTabId].bTabXorGlobal === true) {
-						strAcceptValue = arrOptionsAccept[objTabSettings[iCurrentTabId].iOdataTab];
-						console.log('TAB', strAcceptValue);
-					}
-					else {
-						strAcceptValue = arrOptionsAccept[objTabSettings[iCurrentTabId].iOdataTab];
-						console.log('GLOBAL', strAcceptValue);
-					}
-					updatePageContent(iCurrentTabId);
-				}
 			}
 		}
 	});
@@ -179,7 +129,7 @@ function setValuesFromStorage(res) {
 	// listen to tab switching
 	xBrowser.tabs.onActivated.addListener(
 		function (ev) {
-			console.log('xBrowser.tabs.onActivated.addListener');
+			console.log(ev);
 			iWindowId = ev.windowId;
 			iCurrentTabId = ev.tabId;
 			var strURL = '';
@@ -298,7 +248,7 @@ function connected(objPort) {
 			if (objMessage.bReload) {
 				xBrowser.tabs.reload(iCurrentTabId, { bypassCache: true });
 			}
-			updateIcon(iCurrentTabId);
+			updateIcon();
 		});
 	}
 	else if (objConnectedPort.name === 'portGlobalOptions') {
@@ -356,18 +306,6 @@ function prepareUpdateTabURL(activeTab) {
 		updateObjTabSettingsURL(activeTab.id, activeTab.url);
 		// console.log(objTabSettings[iCurrentTabId]);
 		updateIcon(iCurrentTabId);
-
-		if (objTabSettings[iCurrentTabId].strMatchedURL !== '' && objTabSettings[iCurrentTabId].bUSE) {
-			if (objTabSettings[iCurrentTabId].bTabXorGlobal === true) {
-				strAcceptValue = arrOptionsAccept[objTabSettings[iCurrentTabId].iOdataTab];
-				console.log('TAB', strAcceptValue);
-			}
-			else {
-				strAcceptValue = arrOptionsAccept[objTabSettings[iCurrentTabId].iOdataTab];
-				console.log('GLOBAL', strAcceptValue);
-			}
-			updatePageContent(iCurrentTabId);
-		}
 	}
 }
 
@@ -388,6 +326,50 @@ function updateObjTabSettingsURL(iTabId, strURL) {
 	// console.log('objTabSettings[iTabId].strMatchedURL: ' + objTabSettings[iTabId].strMatchedURL);
 }
 
+// function callXBrowserFunc(objFunc, param, fnSuccess, fnError) {
+// 	if (browserName !== 'firefox') {
+// 		if (param === undefined) {
+// 			objFunc(fnSuccess);
+// 		} else {
+// 			objFunc(param, fnSuccess);
+// 		}
+// 	}
+// 	else {
+// 		if (param === undefined) {
+// 			objFunc().then(fnSuccess, fnError);
+// 		} else {
+// 			objFunc(param).then(fnSuccess, fnError);
+// 		}
+// 	}
+// }
+
+// function callXBrowserFunc2(strXBrowserFunc, param, fnSuccess, fnError) {
+// 	var arrTmp = strXBrowserFunc.split('.');
+// 	var strFunc = arrTmp.pop();
+// 	var xBrowserProperty;
+// 	for (var i = 0; i < arrTmp.length; i++) {
+// 		if (i === 0) {
+// 			xBrowserProperty = xBrowser[arrTmp[0]];
+// 		} else {
+// 			xBrowserProperty = xBrowserProperty[arrTmp[i]];
+// 		}
+// 	}
+// 	if (browserName !== 'firefox') {
+// 		if(param === undefined) {
+// 			xBrowserProperty[strFunc](fnSuccess);
+// 		} else {
+// 			xBrowserProperty[strFunc](param, fnSuccess);
+// 		}
+// 	}
+// 	else {
+// 		if(param === undefined) {
+// 			xBrowserProperty[strFunc]().then(fnSuccess, fnError);
+// 		} else {
+// 			xBrowserProperty[strFunc](param).then(fnSuccess, fnError);
+// 		}
+// 	}
+// }
+
 function callXBrowserFunc(objBrowser, strBrowserFunc, param, fnSuccess, fnError) {
 	if (browserName !== 'firefox') {
 		if (param === undefined) {
@@ -405,33 +387,12 @@ function callXBrowserFunc(objBrowser, strBrowserFunc, param, fnSuccess, fnError)
 	}
 }
 
-function removeHeader(headers, name) {
-	for (var i = 0; i < headers.length; i++) {
-		if (headers[i].name.toLowerCase() == name.toLowerCase()) {
-			headers.splice(i, 1);
-			return;
-		}
-	}
-}
-
-function setHeader(headers, name, value) {
-	for (var header of headers) {
-		if (header.name.toLowerCase() === name.toLowerCase()) {
-			header.value = value;
-			return;
-		}
-	}
-	headers.push({ name : name, value : value });
-}
-
 // Rewrite the Accept header if needed...
 function rewriteRequestAcceptHeader(ev) {
 	var iTabIdEvent = ev.tabId;
 
 	if (ev.type === 'main_frame') {
-		console.log('rewriteRequestAcceptHeader | main_frame | Tab Id: ' + ev.tabId);
-		console.log(ev.url);
-		console.log(objTabSettings[iTabIdEvent]);
+		console.log('rewriteRequestAcceptHeader | main_frame | Tab Id: ' + ev.tabId, ev.url);
 		// Prevent crash while reloading / installing Add-on
 		if (ev.url) {
 			var strEventURL = ev.url;
@@ -450,11 +411,24 @@ function rewriteRequestAcceptHeader(ev) {
 					console.log('GLOBAL', strAcceptValue);
 				}
 				if (objTabSettings[iTabIdEvent].bUSE) {
-					 if(strAcceptValue === 'text/xml') {
-					 	setHeader(ev.requestHeaders, 'Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3');
-					 } else {
-						setHeader(ev.requestHeaders, 'Accept', strAcceptValue);
-					 }
+					var bAccept = false;
+					for (var header of ev.requestHeaders) {
+						if (header.name.toLowerCase() === 'accept') {
+							bAccept = true;
+							var strValue = header.value.toLowerCase();
+							if (strValue.indexOf('application/json') > -1) {
+								if (RegExpOData.test(strValue) === false) {
+									header.value = strAcceptValue;
+								}
+							}
+							else {
+								header.value = strAcceptValue;
+							}
+						}
+					}
+					if (!bAccept) {
+						ev.requestHeaders.push({ name: 'Accept', value: strAcceptValue });
+					}
 				}
 			}
 		}
@@ -463,45 +437,4 @@ function rewriteRequestAcceptHeader(ev) {
 		updateIcon();
 	}
 	return { requestHeaders: ev.requestHeaders };
-}
-
-function updatePageContent(iTabId) {
-	// if(strAcceptValue === 'text/xml' && browserName === 'chrome') {
-	if(strAcceptValue === 'text/xml' && browserName !== 'firefox') {
-		// var objXSL = loadXMLDoc(xBrowser.extension.getURL('') + 'XSL/browser.xsl');
-		// xBrowser.tabs.sendMessage( iCurrentTabId, objXSL ); // GEHT NICHT
-		
-		// var strXSL = loadXMLString(xBrowser.extension.getURL('') + 'XSL/browser.xsl'); // GEHT...
-		/*
-		var strXSL = loadXMLString(xBrowser.extension.getURL('') + 'XSL/XMLPrettyPrint.xsl'); // GEHT!
-		xBrowser.tabs.sendMessage( iCurrentTabId, {XSL: strXSL});
-		*/
-		xBrowser.tabs.sendMessage( iCurrentTabId, {XSL: true});
-		
-	} else {
-		xBrowser.tabs.sendMessage( iTabId, {txt: 'loadJSONViewer'});
-	}
-}
-
-function loadXMLDoc(dname) {
-	var xhttp;
-	if (window.XMLHttpRequest) {
-		xhttp = new XMLHttpRequest();
-	} else {
-		xhttp = new ActiveXObject("Microsoft.XMLHTTP");
-	}
-	xhttp.open('GET', dname, false);
-	xhttp.send('');
-	return xhttp.responseXML;
-}
-function loadXMLString(dname) {
-	var xhttp;
-	if (window.XMLHttpRequest) {
-		xhttp = new XMLHttpRequest();
-	} else {
-		xhttp = new ActiveXObject("Microsoft.XMLHTTP");
-	}
-	xhttp.open('GET', dname, false);
-	xhttp.send('');
-	return xhttp.response;
 }
