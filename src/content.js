@@ -22,7 +22,6 @@ xBrowser.runtime.onMessage.addListener(
 		if (objMsg.txt === 'loadJSONViewer') {
 			var preJSON = document.querySelector('body > pre');
 			if(preJSON != null) {
-				// console.log('JSON found!', preJSON); // CRASH in EDGE during reload
 				var divJSON = document.createElement('div');
 				divJSON.id = 'json';
 				document.body.appendChild(divJSON);
@@ -53,32 +52,13 @@ xBrowser.runtime.onMessage.addListener(
 					}
 				}
 			}
-		} else if(objMsg.XSL !== undefined) {
+		} else if(objMsg.bXML !== undefined) {
 			var preXML;
 			if(browserName === 'chrome') {
 				preXML = document.querySelector('body > pre') ;
-			} else {
-				// EDGE
-				/*
-				###########################################################				
-				GEHT ZUR ZEIT NUR MIT RELOAD!!!!
-				###########################################################				
-				*/
-				preXML = document.body;
 			}
 			if(preXML != null) {
 				var docXML = new DOMParser().parseFromString(preXML.innerText, 'text/xml');
-				/*
-				var docXML = new DOMParser().parseFromString(preXML.innerText, 'text/xml');
-				var xsltProcessor=new XSLTProcessor();
-				var docXSL = new DOMParser().parseFromString (objMsg.XSL, 'text/xml');
-				xsltProcessor.importStylesheet(docXSL);
-				var resultDocument = xsltProcessor.transformToFragment(docXML, document);
-				document.body.innerHTML = '';
-				document.body.appendChild(resultDocument);
-				*/
-
-				
 				var nodeParentPairs = [];
 				// Script entry point.
 				var tree;
@@ -357,39 +337,6 @@ xBrowser.runtime.onMessage.addListener(
 					attribute.appendChild(textAfter);
 					return attribute;
 				}
-				// // Tree behaviour.
-				// function drawArrows()
-				// {
-				// 	// var ctx = document.getCSSCanvasContext("2d", "arrowRight", 10, 11);
-				// 	var canvas = document.createElement('canvas');
-				// 	canvas.id = 'arrowRight';
-				// 	canvas.width = '10';
-				// 	canvas.height = '11';
-				// 	var ctx = canvas.getContext("2d");
-				// 	ctx.fillStyle = "rgb(90,90,90)";
-				// 	ctx.beginPath();
-				// 	ctx.moveTo(0, 0);
-				// 	ctx.lineTo(0, 8);
-				// 	ctx.lineTo(7, 4);
-				// 	ctx.lineTo(0, 0);
-				// 	ctx.fill();
-				// 	ctx.closePath();
-				// 	// var ctx = document.getCSSCanvasContext("2d", "arrowDown", 10, 10);
-				// 	var canvas = document.createElement('canvas');
-				// 	canvas.id = 'arrowDown';
-				// 	canvas.width = '10';
-				// 	canvas.height = '10';
-				// 	var ctx = canvas.getContext("2d");
-
-				// 	ctx.fillStyle = "rgb(90,90,90)";
-				// 	ctx.beginPath();
-				// 	ctx.moveTo(0, 0);
-				// 	ctx.lineTo(8, 0);
-				// 	ctx.lineTo(4, 7);
-				// 	ctx.lineTo(0, 0);
-				// 	ctx.fill();
-				// 	ctx.closePath();
-				// }
 				function expandFunction(sectionId)
 				{
 					return function()
@@ -479,7 +426,7 @@ xBrowser.runtime.onMessage.addListener(
 				+ '}';
 
 				var styleXML = document.querySelector('#xml-viewer-style');
-				if(styleXML  === null) {
+				if(styleXML === null) {
 					styleXML = document.createElement('style');
 					styleXML.id = 'xml-viewer-style';
 					document.head.appendChild(styleXML);

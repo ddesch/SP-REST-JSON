@@ -57,34 +57,36 @@ if (typeof browser === 'undefined') {
 	browserName = 'firefox';
 	xBrowser = browser;
 }
+
+xBrowser.runtime.onInstalled.addListener(function(details) {
+	console.log(details);
+	if (details.reason === 'install') {
+		setDefaultGlobalOptions();
+    } else if(details.reason === 'update') {
+		//call a function to handle an update
+		console.log('update');
+    }
+});
+
 // callXBrowserFunc(xBrowser.storage.sync.get, null, setValuesFromStorage, onError);
 // callXBrowserFunc2('storage.sync.get', null, setValuesFromStorage, onError);
 callXBrowserFunc(xBrowser.storage.sync, 'get', null, setValuesFromStorage, onError);
 
 function setValuesFromStorage(res) {
 	console.log('res:', res);
-	if (res.arrOptionsAccept !== undefined) {
-		arrOptionsAccept = res.arrOptionsAccept;
-	}
-	else {
-		xBrowser.storage.sync.set({
-			arrOptionsAccept: arrOptionsAccept
-		});
-	}
 	if (res.arrFilterURLs !== undefined && res.arrFilterURLs.length > 0) {
 		arrFilterURLs = res.arrFilterURLs;
 		arrFilterOptionsIndex = res.arrFilterOptionsIndex;
-
-		// Remove iOdataTab option per tab:
-		var arrKeys = Object.keys(objTabSettings);
-		for (var i = 0; i < arrKeys.length; i++) {
-			if (objTabSettings[arrKeys[i]].iOdataTab !== undefined) {
-				delete objTabSettings[arrKeys[i]].iOdataTab;
-			}
-		}
-	}
-	else {
-		setDefaultGlobalOptions();
+		// // Remove iOdataTab option per tab: // Why exactly???
+		// var arrKeys = Object.keys(objTabSettings);
+		// for (var i = 0; i < arrKeys.length; i++) {
+		// 	if (objTabSettings[arrKeys[i]].iOdataTab !== undefined) {
+		// 		delete objTabSettings[arrKeys[i]].iOdataTab;
+		// 	}
+		// }
+	} else {
+		arrFilterURLs = arrDefaultFilterURLs;
+		arrFilterOptionsIndex = arrDefaultFilterOptionsIndex;
 	}
 	xBrowser.runtime.onConnect.addListener(connected);
 
@@ -99,7 +101,8 @@ function setValuesFromStorage(res) {
 	);
 
 	xBrowser.webRequest.onHeadersReceived.addListener(
-		changeResponseHeaders, {
+		changeResponseHeaders,
+		{
 			urls: ['<all_urls>']
 		},
 		["blocking", "responseHeaders"]
@@ -334,16 +337,35 @@ function setCrossBrowserIcon(strFileName) {
 }
 
 function setDefaultGlobalOptions() {
-	xBrowser.storage.sync.set({
-		arrFilterURLs: arrDefaultFilterURLs
-		, arrFilterOptionsIndex: arrDefaultFilterOptionsIndex
-	}, function () {
-		if (objConnectedPort !== undefined && objConnectedPort.name === 'portGlobalOptions') {
-			objConnectedPort.postMessage({
-				reloadOptions: true
-			});
-		}
-	});
+	callXBrowserFunc(
+		xBrowser.storage.sync,
+		'set',
+		{
+			arrFilterURLs: arrDefaultFilterURLs,
+			arrFilterOptionsIndex: arrDefaultFilterOptionsIndex
+		},
+		function(){
+			console.log('setDefaultGlobalOptions result function');
+			if (objConnectedPort !== undefined && objConnectedPort.name === 'portGlobalOptions') {
+				objConnectedPort.postMessage({
+					reloadOptions: true
+				});
+			}
+		},
+		onError
+	);
+	
+	// xBrowser.storage.sync.set({
+	// 	arrFilterURLs: arrDefaultFilterURLs
+	// 	, arrFilterOptionsIndex: arrDefaultFilterOptionsIndex
+	// }, function () {
+	// 	console.log('setDefaultGlobalOptions result function');
+	// 	if (objConnectedPort !== undefined && objConnectedPort.name === 'portGlobalOptions') {
+	// 		objConnectedPort.postMessage({
+	// 			reloadOptions: true
+	// 		});
+	// 	}
+	// });
 }
 
 function onError(error) {
@@ -466,42 +488,9 @@ function rewriteRequestAcceptHeader(ev) {
 }
 
 function updatePageContent(iTabId) {
-	// if(strAcceptValue === 'text/xml' && browserName === 'chrome') {
 	if(strAcceptValue === 'text/xml' && browserName !== 'firefox') {
-		// var objXSL = loadXMLDoc(xBrowser.extension.getURL('') + 'XSL/browser.xsl');
-		// xBrowser.tabs.sendMessage( iCurrentTabId, objXSL ); // GEHT NICHT
-		
-		// var strXSL = loadXMLString(xBrowser.extension.getURL('') + 'XSL/browser.xsl'); // GEHT...
-		/*
-		var strXSL = loadXMLString(xBrowser.extension.getURL('') + 'XSL/XMLPrettyPrint.xsl'); // GEHT!
-		xBrowser.tabs.sendMessage( iCurrentTabId, {XSL: strXSL});
-		*/
-		xBrowser.tabs.sendMessage( iCurrentTabId, {XSL: true});
-		
+		xBrowser.tabs.sendMessage( iCurrentTabId, {bXML: true});
 	} else {
 		xBrowser.tabs.sendMessage( iTabId, {txt: 'loadJSONViewer'});
 	}
-}
-
-function loadXMLDoc(dname) {
-	var xhttp;
-	if (window.XMLHttpRequest) {
-		xhttp = new XMLHttpRequest();
-	} else {
-		xhttp = new ActiveXObject("Microsoft.XMLHTTP");
-	}
-	xhttp.open('GET', dname, false);
-	xhttp.send('');
-	return xhttp.responseXML;
-}
-function loadXMLString(dname) {
-	var xhttp;
-	if (window.XMLHttpRequest) {
-		xhttp = new XMLHttpRequest();
-	} else {
-		xhttp = new ActiveXObject("Microsoft.XMLHTTP");
-	}
-	xhttp.open('GET', dname, false);
-	xhttp.send('');
-	return xhttp.response;
 }
