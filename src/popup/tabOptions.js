@@ -114,7 +114,7 @@ portBgScript.onMessage.addListener(function (objCurrentTab) {
 });
 
 function onError(error) {
-	console.log('Error: ' + error);
+	console.error('Error: ' + error);
 }
 
 function checkTabs(tabs) {
@@ -156,8 +156,8 @@ function checkTabs(tabs) {
 }
 
 function setLayout() {
-	console.log('strMatchedURL', strMatchedURL);
-	console.log('bUSE', bUSE, 'bTabXorGlobal', bTabXorGlobal)
+	// console.log('strMatchedURL', strMatchedURL);
+	// console.log('bUSE', bUSE, 'bTabXorGlobal', bTabXorGlobal)
 	if (strMatchedURL === '') {
 		chkboxToggleUseAddon.disabled = true;
 		selectOdataTab.disabled = true;

@@ -59,31 +59,19 @@ if (typeof browser === 'undefined') {
 }
 
 xBrowser.runtime.onInstalled.addListener(function(details) {
-	console.log(details);
+	// console.log(details);
 	if (details.reason === 'install') {
 		setDefaultGlobalOptions();
-    } else if(details.reason === 'update') {
-		//call a function to handle an update
-		console.log('update');
     }
 });
 
-// callXBrowserFunc(xBrowser.storage.sync.get, null, setValuesFromStorage, onError);
-// callXBrowserFunc2('storage.sync.get', null, setValuesFromStorage, onError);
 callXBrowserFunc(xBrowser.storage.sync, 'get', null, setValuesFromStorage, onError);
 
 function setValuesFromStorage(res) {
-	console.log('res:', res);
+	// console.log('res:', res);
 	if (res.arrFilterURLs !== undefined && res.arrFilterURLs.length > 0) {
 		arrFilterURLs = res.arrFilterURLs;
 		arrFilterOptionsIndex = res.arrFilterOptionsIndex;
-		// // Remove iOdataTab option per tab: // Why exactly???
-		// var arrKeys = Object.keys(objTabSettings);
-		// for (var i = 0; i < arrKeys.length; i++) {
-		// 	if (objTabSettings[arrKeys[i]].iOdataTab !== undefined) {
-		// 		delete objTabSettings[arrKeys[i]].iOdataTab;
-		// 	}
-		// }
 	} else {
 		arrFilterURLs = arrDefaultFilterURLs;
 		arrFilterOptionsIndex = arrDefaultFilterOptionsIndex;
@@ -111,7 +99,7 @@ function setValuesFromStorage(res) {
 	function changeResponseHeaders(ev) {
 		var iTabIdEvent = ev.tabId;
 		if (ev.type === 'main_frame' && ev.url) {
-			console.log('changeResponseHeaders main_frame', ev);
+			// console.log('changeResponseHeaders main_frame', ev);
 			var strEventURL = ev.url;
 			if (objTabSettings[iTabIdEvent] === undefined) {
 				createObjTab(iTabIdEvent, strEventURL);
@@ -121,11 +109,11 @@ function setValuesFromStorage(res) {
 			if (objTabSettings[iTabIdEvent].strMatchedURL !== '' && objTabSettings[iTabIdEvent].bUSE) {
 				if (objTabSettings[iTabIdEvent].bTabXorGlobal === true) {
 					strAcceptValue = arrOptionsAccept[objTabSettings[iTabIdEvent].iOdataTab];
-					console.log('TAB', strAcceptValue);
+					// console.log('TAB', strAcceptValue);
 				}
 				else {
 					strAcceptValue = arrOptionsAccept[objTabSettings[iTabIdEvent].iOdataTab];
-					console.log('GLOBAL', strAcceptValue);
+					// console.log('GLOBAL', strAcceptValue);
 				}
 				if (objTabSettings[iTabIdEvent].bUSE) {
 					if(strAcceptValue === 'text/xml') {
@@ -167,11 +155,11 @@ function setValuesFromStorage(res) {
 				if (objTabSettings[iCurrentTabId].strMatchedURL !== '' && objTabSettings[iCurrentTabId].bUSE) {
 					if (objTabSettings[iCurrentTabId].bTabXorGlobal === true) {
 						strAcceptValue = arrOptionsAccept[objTabSettings[iCurrentTabId].iOdataTab];
-						console.log('TAB', strAcceptValue);
+						// console.log('TAB', strAcceptValue);
 					}
 					else {
 						strAcceptValue = arrOptionsAccept[objTabSettings[iCurrentTabId].iOdataTab];
-						console.log('GLOBAL', strAcceptValue);
+						// console.log('GLOBAL', strAcceptValue);
 					}
 					updatePageContent(iCurrentTabId);
 				}
@@ -182,7 +170,7 @@ function setValuesFromStorage(res) {
 	// listen to tab switching
 	xBrowser.tabs.onActivated.addListener(
 		function (ev) {
-			console.log('xBrowser.tabs.onActivated.addListener');
+			// console.log('xBrowser.tabs.onActivated.addListener');
 			iWindowId = ev.windowId;
 			iCurrentTabId = ev.tabId;
 			var strURL = '';
@@ -195,7 +183,7 @@ function setValuesFromStorage(res) {
 
 	xBrowser.tabs.onRemoved.addListener(
 		function (iTabRemovedId) {
-			console.log('xBrowser.tabs.onRemoved Tab Id: ' + iTabRemovedId);
+			// console.log('xBrowser.tabs.onRemoved Tab Id: ' + iTabRemovedId);
 			delete objTabSettings[iTabRemovedId];
 		}
 	);
@@ -344,8 +332,15 @@ function setDefaultGlobalOptions() {
 			arrFilterURLs: arrDefaultFilterURLs,
 			arrFilterOptionsIndex: arrDefaultFilterOptionsIndex
 		},
-		function(){
-			console.log('setDefaultGlobalOptions result function');
+		function() {
+			var arrKeys = Object.keys(objTabSettings);
+			for (var i = 0; i < arrKeys.length; i++) {
+				var objTabConfig = objTabSettings[arrKeys[i]];
+				if (objTabConfig.iOdataTab !== undefined && objTabConfig.bTabXorGlobal === false) {
+					objTabConfig.iOdataTab = 0;
+				}
+			}
+			// console.log('setDefaultGlobalOptions result function');
 			if (objConnectedPort !== undefined && objConnectedPort.name === 'portGlobalOptions') {
 				objConnectedPort.postMessage({
 					reloadOptions: true
@@ -354,22 +349,10 @@ function setDefaultGlobalOptions() {
 		},
 		onError
 	);
-	
-	// xBrowser.storage.sync.set({
-	// 	arrFilterURLs: arrDefaultFilterURLs
-	// 	, arrFilterOptionsIndex: arrDefaultFilterOptionsIndex
-	// }, function () {
-	// 	console.log('setDefaultGlobalOptions result function');
-	// 	if (objConnectedPort !== undefined && objConnectedPort.name === 'portGlobalOptions') {
-	// 		objConnectedPort.postMessage({
-	// 			reloadOptions: true
-	// 		});
-	// 	}
-	// });
 }
 
 function onError(error) {
-	console.log('Error: ' + error);
+	console.error('Error: ' + error);
 }
 
 function prepareUpdateTabURL(activeTab) {
@@ -382,11 +365,11 @@ function prepareUpdateTabURL(activeTab) {
 		if (objTabSettings[iCurrentTabId].strMatchedURL !== '' && objTabSettings[iCurrentTabId].bUSE) {
 			if (objTabSettings[iCurrentTabId].bTabXorGlobal === true) {
 				strAcceptValue = arrOptionsAccept[objTabSettings[iCurrentTabId].iOdataTab];
-				console.log('TAB', strAcceptValue);
+				// console.log('TAB', strAcceptValue);
 			}
 			else {
 				strAcceptValue = arrOptionsAccept[objTabSettings[iCurrentTabId].iOdataTab];
-				console.log('GLOBAL', strAcceptValue);
+				// console.log('GLOBAL', strAcceptValue);
 			}
 			updatePageContent(iCurrentTabId);
 		}
@@ -451,9 +434,9 @@ function rewriteRequestAcceptHeader(ev) {
 	var iTabIdEvent = ev.tabId;
 
 	if (ev.type === 'main_frame') {
-		console.log('rewriteRequestAcceptHeader | main_frame | Tab Id: ' + ev.tabId);
-		console.log(ev.url);
-		console.log(objTabSettings[iTabIdEvent]);
+		// console.log('rewriteRequestAcceptHeader | main_frame | Tab Id: ' + ev.tabId);
+		// console.log(ev.url);
+		// console.log(objTabSettings[iTabIdEvent]);
 		// Prevent crash while reloading / installing Add-on
 		if (ev.url) {
 			var strEventURL = ev.url;
@@ -465,11 +448,11 @@ function rewriteRequestAcceptHeader(ev) {
 			if (objTabSettings[iTabIdEvent].strMatchedURL !== '' && objTabSettings[iTabIdEvent].bUSE) {
 				if (objTabSettings[iTabIdEvent].bTabXorGlobal === true) {
 					strAcceptValue = arrOptionsAccept[objTabSettings[iTabIdEvent].iOdataTab];
-					console.log('TAB', strAcceptValue);
+					// console.log('TAB', strAcceptValue);
 				}
 				else {
 					strAcceptValue = arrOptionsAccept[objTabSettings[iTabIdEvent].iOdataTab];
-					console.log('GLOBAL', strAcceptValue);
+					// console.log('GLOBAL', strAcceptValue);
 				}
 				if (objTabSettings[iTabIdEvent].bUSE) {
 					 if(strAcceptValue === 'text/xml') {

@@ -208,27 +208,30 @@ function setValuesFromStorage(res) {
 }
 
 function restoreDefault() {
-	portGlobalOptions.postMessage({
-		setDefaultOptions: true
-	});
-	portGlobalOptions.onMessage.addListener(function(objBgScript) {
-		if(objBgScript.reloadOptions != undefined  && objBgScript.reloadOptions === true) {
-			// Delete paragraph elements with filter options...
-			var nlParagraphFilter = document.querySelectorAll('p.filter');
-			var cntParagraphFilter = nlParagraphFilter.length - 1;
-			for(var i = cntParagraphFilter; i > -1; i--) {
-				nlParagraphFilter[i].outerHTML = '';
+	var bConfirm = confirm("Delete all options and restore default options?");
+	if (bConfirm) {
+		portGlobalOptions.postMessage({
+			setDefaultOptions: true
+		});
+		portGlobalOptions.onMessage.addListener(function(objBgScript) {
+			if(objBgScript.reloadOptions != undefined  && objBgScript.reloadOptions === true) {
+				// Delete paragraph elements with filter options...
+				var nlParagraphFilter = document.querySelectorAll('p.filter');
+				var cntParagraphFilter = nlParagraphFilter.length - 1;
+				for(var i = cntParagraphFilter; i > -1; i--) {
+					nlParagraphFilter[i].outerHTML = '';
+				}
+				if(browserName !== 'firefox') {
+					xBrowser.storage.sync.get(setValuesFromStorage);
+				}
+				else {
+					xBrowser.storage.sync
+						.get()
+						.then(setValuesFromStorage);
+				}
 			}
-			if(browserName !== 'firefox') {
-				xBrowser.storage.sync.get(setValuesFromStorage);
-			}
-			else {
-				xBrowser.storage.sync
-					.get()
-					.then(setValuesFromStorage);
-			}
-		}
-	});
+		});
+	}
 }
 
 function reloadFromStorage(){
