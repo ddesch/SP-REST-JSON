@@ -1,3 +1,7 @@
+/*
+  USAGE: gulp --publishVersion <version number>
+  example: gulp --publishVersion 1.2.0
+*/
 const { src, dest } = require('gulp');
 const args = require('gulp-args');
 const replace = require('gulp-replace');

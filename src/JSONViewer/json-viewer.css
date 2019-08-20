@@ -49,9 +49,7 @@
 }
 
 .json-viewer a.list-link.collapsed:before {
-	/* content: "\25B6"; */
-	content: "\25B7";
-	content: "\25BA"; 
+	content: "\25BA";
 }
 
 .json-viewer a.list-link.empty:before {
