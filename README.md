@@ -15,7 +15,7 @@ Once a tab is active, the current URL is matched against the following strings:
 
 At a match the accept property in the request header is changed to 'application/json;odata=verbose' per default.
 
-**New since version 1.1.0: Global Options**
+### Global Options
 * Add or change SharePoint URL filters
 * Set the accept header per URL filter
 
@@ -23,3 +23,4 @@ In the menu the following options can be chosen:
 * application/json;odata=verbose
 * application/json;odata=minimalmetadata
 * application/json;odata=nometadata
+* text/xml

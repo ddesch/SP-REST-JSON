@@ -62,7 +62,12 @@ xBrowser.runtime.onInstalled.addListener(function(details) {
 	// console.log(details);
 	if (details.reason === 'install') {
 		setDefaultGlobalOptions();
-    }
+    } else if (details.rease === 'update') {
+		// console.log('UPDATE');
+		xBrowser.storage.sync.set({
+			arrOptionsAccept: arrOptionsAccept
+		});
+	}
 });
 
 callXBrowserFunc(xBrowser.storage.sync, 'get', null, setValuesFromStorage, onError);
@@ -330,6 +335,7 @@ function setDefaultGlobalOptions() {
 		'set',
 		{
 			arrFilterURLs: arrDefaultFilterURLs,
+			arrOptionsAccept: arrOptionsAccept,
 			arrFilterOptionsIndex: arrDefaultFilterOptionsIndex
 		},
 		function() {
