@@ -1,6 +1,6 @@
 /**
  * 
- *	SP REST JSON, v. 1.2.0
+ *	SP REST JSON, v. 1.3.0
  *
  *	by Daniel Desch <danieldesch@gmx.de>
  *
@@ -46,8 +46,7 @@ var objConnectedPort;
 var publicToggleIcon;
 
 if (typeof browser === 'undefined') {
-	// If browser is not defined, the plugin was loaded into Google Chrome.
-	// Set the xBrowser variable and the browserName accordingly.
+	// browser is undefined in Google Chrome
 	browserName = 'chrome';
 	xBrowser = chrome;
 } else if (window.MsInkCanvasContext !== undefined && typeof window.MsInkCanvasContext === 'function') {
@@ -59,16 +58,21 @@ if (typeof browser === 'undefined') {
 }
 
 xBrowser.runtime.onInstalled.addListener(function(details) {
-	// console.log(details);
+	console.log(details);
 	if (details.reason === 'install') {
 		setDefaultGlobalOptions();
-    }
+    } else if (details.rease === 'update') {
+		console.log('UPDATE');
+		xBrowser.storage.sync.set({
+			arrOptionsAccept: arrOptionsAccept
+		});
+	}
 });
 
 callXBrowserFunc(xBrowser.storage.sync, 'get', null, setValuesFromStorage, onError);
 
 function setValuesFromStorage(res) {
-	// console.log('res:', res);
+	console.log('res:', res);
 	if (res.arrFilterURLs !== undefined && res.arrFilterURLs.length > 0) {
 		arrFilterURLs = res.arrFilterURLs;
 		arrFilterOptionsIndex = res.arrFilterOptionsIndex;
@@ -78,53 +82,54 @@ function setValuesFromStorage(res) {
 	}
 	xBrowser.runtime.onConnect.addListener(connected);
 
-	// Add rewriteRequestAcceptHeader as a listener to onBeforeSendHeaders
-	// Make it "blocking" so we can modify the headers.
+	// For changing the Request header
 	xBrowser.webRequest.onBeforeSendHeaders.addListener(
 		rewriteRequestAcceptHeader,
 		{
-			urls: ['<all_urls>']
+			urls: ['<all_urls>'],
+			types: ['main_frame']
 		},
 		["blocking", "requestHeaders"]
 	);
 
+	// For changing the Response header
 	xBrowser.webRequest.onHeadersReceived.addListener(
 		changeResponseHeaders,
 		{
-			urls: ['<all_urls>']
+			urls: ['<all_urls>'],
+			types: ['main_frame']
 		},
 		["blocking", "responseHeaders"]
 	);
 
 	function changeResponseHeaders(ev) {
 		var iTabIdEvent = ev.tabId;
-		if (ev.type === 'main_frame' && ev.url) {
-			// console.log('changeResponseHeaders main_frame', ev);
-			var strEventURL = ev.url;
-			if (objTabSettings[iTabIdEvent] === undefined) {
-				createObjTab(iTabIdEvent, strEventURL);
-			} else {
-				updateObjTabSettingsURL(iTabIdEvent, strEventURL);
+		console.log('changeResponseHeaders main_frame', ev);
+		var strEventURL = ev.url;
+		if (objTabSettings[iTabIdEvent] === undefined) {
+			createObjTab(iTabIdEvent, strEventURL);
+		} else {
+			updateObjTabSettingsURL(iTabIdEvent, strEventURL);
+		}
+		if (objTabSettings[iTabIdEvent].strMatchedURL !== '' && objTabSettings[iTabIdEvent].bUSE) {
+			if (objTabSettings[iTabIdEvent].bTabXorGlobal === true) {
+				strAcceptValue = arrOptionsAccept[objTabSettings[iTabIdEvent].iOdataTab];
+				console.log('TAB', strAcceptValue);
 			}
-			if (objTabSettings[iTabIdEvent].strMatchedURL !== '' && objTabSettings[iTabIdEvent].bUSE) {
-				if (objTabSettings[iTabIdEvent].bTabXorGlobal === true) {
-					strAcceptValue = arrOptionsAccept[objTabSettings[iTabIdEvent].iOdataTab];
-					// console.log('TAB', strAcceptValue);
-				}
-				else {
-					strAcceptValue = arrOptionsAccept[objTabSettings[iTabIdEvent].iOdataTab];
-					// console.log('GLOBAL', strAcceptValue);
-				}
-				if (objTabSettings[iTabIdEvent].bUSE) {
-					if(strAcceptValue === 'text/xml') {
-						setHeader(ev.responseHeaders, 'Content-Type', 'text/xml');
-					}
+			else {
+				strAcceptValue = arrOptionsAccept[objTabSettings[iTabIdEvent].iOdataTab];
+				console.log('GLOBAL', strAcceptValue);
+			}
+			if (objTabSettings[iTabIdEvent].bUSE) {
+				if(strAcceptValue === 'text/xml') {
+					setHeader(ev.responseHeaders, 'Content-Type', 'text/xml');
 				}
 			}
 		}
 		return { responseHeaders: ev.responseHeaders };
 	}
-	
+
+
 	// listen to NEW tabs (empty and opened from bookmarks)
 	xBrowser.tabs.onCreated.addListener(function (tab) {
 		iWindowId = tab.windowid;
@@ -138,7 +143,7 @@ function setValuesFromStorage(res) {
 
 	// listen to tab URL changes
 	xBrowser.tabs.onUpdated.addListener(function (iTabId, changeInfo, tab) {
-		// console.log(changeInfo.status); // CRASH in EDGE!
+		// console.log(changeInfo.status); // CRASHES in EDGE!
 		if (changeInfo.status === 'complete') {
 			var strURL = tab.url;
 			iWindowId = tab.windowid;
@@ -155,11 +160,11 @@ function setValuesFromStorage(res) {
 				if (objTabSettings[iCurrentTabId].strMatchedURL !== '' && objTabSettings[iCurrentTabId].bUSE) {
 					if (objTabSettings[iCurrentTabId].bTabXorGlobal === true) {
 						strAcceptValue = arrOptionsAccept[objTabSettings[iCurrentTabId].iOdataTab];
-						// console.log('TAB', strAcceptValue);
+						console.log('TAB', strAcceptValue);
 					}
 					else {
 						strAcceptValue = arrOptionsAccept[objTabSettings[iCurrentTabId].iOdataTab];
-						// console.log('GLOBAL', strAcceptValue);
+						console.log('GLOBAL', strAcceptValue);
 					}
 					updatePageContent(iCurrentTabId);
 				}
@@ -170,7 +175,7 @@ function setValuesFromStorage(res) {
 	// listen to tab switching
 	xBrowser.tabs.onActivated.addListener(
 		function (ev) {
-			// console.log('xBrowser.tabs.onActivated.addListener');
+			console.log('xBrowser.tabs.onActivated.addListener');
 			iWindowId = ev.windowId;
 			iCurrentTabId = ev.tabId;
 			var strURL = '';
@@ -183,7 +188,7 @@ function setValuesFromStorage(res) {
 
 	xBrowser.tabs.onRemoved.addListener(
 		function (iTabRemovedId) {
-			// console.log('xBrowser.tabs.onRemoved Tab Id: ' + iTabRemovedId);
+			console.log('xBrowser.tabs.onRemoved Tab Id: ' + iTabRemovedId);
 			delete objTabSettings[iTabRemovedId];
 		}
 	);
@@ -202,7 +207,7 @@ function initialiseSettingsForInstallingTab(activeTab) {
 }
 
 function createObjTab(iTabId, strURL) {
-	// console.log('createObjTab', objTabSettings);
+	console.log('createObjTab', objTabSettings);
 	if (iTabId !== -1) {
 		objTabSettings[iTabId] = {};
 		objTabSettings[iTabId].bUSE = true;
@@ -216,7 +221,7 @@ function createObjTab(iTabId, strURL) {
 
 function updateIcon(iTabId) {
 	if (iTabId !== undefined && iTabId > -1) {
-		// console.log(iTabId);
+		console.log(iTabId);
 		var strTooltip = 'SP REST JSON\n\n';
 		var objTab = objTabSettings[iTabId];
 		if (objTab.strMatchedURL !== '') {
@@ -330,6 +335,7 @@ function setDefaultGlobalOptions() {
 		'set',
 		{
 			arrFilterURLs: arrDefaultFilterURLs,
+			arrOptionsAccept: arrOptionsAccept,
 			arrFilterOptionsIndex: arrDefaultFilterOptionsIndex
 		},
 		function() {
@@ -340,7 +346,7 @@ function setDefaultGlobalOptions() {
 					objTabConfig.iOdataTab = 0;
 				}
 			}
-			// console.log('setDefaultGlobalOptions result function');
+			console.log('setDefaultGlobalOptions result function');
 			if (objConnectedPort !== undefined && objConnectedPort.name === 'portGlobalOptions') {
 				objConnectedPort.postMessage({
 					reloadOptions: true
@@ -356,20 +362,20 @@ function onError(error) {
 }
 
 function prepareUpdateTabURL(activeTab) {
-	// console.log(activeTab);
+	console.log(activeTab);
 	if (activeTab !== undefined) {
 		updateObjTabSettingsURL(activeTab.id, activeTab.url);
-		// console.log(objTabSettings[iCurrentTabId]);
+		console.log(objTabSettings[iCurrentTabId]);
 		updateIcon(iCurrentTabId);
 
 		if (objTabSettings[iCurrentTabId].strMatchedURL !== '' && objTabSettings[iCurrentTabId].bUSE) {
 			if (objTabSettings[iCurrentTabId].bTabXorGlobal === true) {
 				strAcceptValue = arrOptionsAccept[objTabSettings[iCurrentTabId].iOdataTab];
-				// console.log('TAB', strAcceptValue);
+				console.log('TAB', strAcceptValue);
 			}
 			else {
 				strAcceptValue = arrOptionsAccept[objTabSettings[iCurrentTabId].iOdataTab];
-				// console.log('GLOBAL', strAcceptValue);
+				console.log('GLOBAL', strAcceptValue);
 			}
 			updatePageContent(iCurrentTabId);
 		}
@@ -388,25 +394,33 @@ function updateObjTabSettingsURL(iTabId, strURL) {
 		}
 	} else {
 		objTabSettings[iTabId].strMatchedURL = '';
-		objTabSettings[iTabId].iOdataTab = 0;
 	}
-	// console.log('objTabSettings[iTabId].strMatchedURL: ' + objTabSettings[iTabId].strMatchedURL);
+	console.log('objTabSettings[iTabId].strMatchedURL: ' + objTabSettings[iTabId].strMatchedURL);
 }
 
-function callXBrowserFunc(objBrowser, strBrowserFunc, param, fnSuccess, fnError) {
+function callXBrowserFunc(objBrowserProp, strBrowserFunc, param, fnSuccess, fnError) {
 	if (browserName !== 'firefox') {
 		if (param === undefined) {
-			objBrowser[strBrowserFunc](fnSuccess);
+			objBrowserProp[strBrowserFunc](fnSuccess);
 		} else {
-			objBrowser[strBrowserFunc](param, fnSuccess);
+			objBrowserProp[strBrowserFunc](param, fnSuccess);
 		}
 	}
 	else {
 		if (param === undefined) {
-			objBrowser[strBrowserFunc]().then(fnSuccess, fnError);
+			objBrowserProp[strBrowserFunc]().then(fnSuccess, fnError);
 		} else {
-			objBrowser[strBrowserFunc](param).then(fnSuccess, fnError);
+			objBrowserProp[strBrowserFunc](param).then(fnSuccess, fnError);
 		}
+	}
+}
+
+function callXBrowserTabSendMessage(iTabId, objParam, fnSuccess, fnError) {
+	if (browserName !== 'firefox') {
+		xBrowser.tabs.sendMessage(iTabId, objParam, fnSuccess);
+	}
+	else {
+		xBrowser.tabs.sendMessage(iTabId, objParam).then(fnSuccess).catch(fnError);
 	}
 }
 
@@ -432,35 +446,32 @@ function setHeader(headers, name, value) {
 // Rewrite the Accept header if needed...
 function rewriteRequestAcceptHeader(ev) {
 	var iTabIdEvent = ev.tabId;
-
-	if (ev.type === 'main_frame') {
-		// console.log('rewriteRequestAcceptHeader | main_frame | Tab Id: ' + ev.tabId);
-		// console.log(ev.url);
-		// console.log(objTabSettings[iTabIdEvent]);
-		// Prevent crash while reloading / installing Add-on
-		if (ev.url) {
-			var strEventURL = ev.url;
-			if (objTabSettings[iTabIdEvent] === undefined) {
-				createObjTab(iTabIdEvent, strEventURL);
-			} else {
-				updateObjTabSettingsURL(iTabIdEvent, strEventURL);
+	console.log('rewriteRequestAcceptHeader | main_frame | Tab Id: ' + ev.tabId);
+	console.log(ev.url);
+	console.log(objTabSettings[iTabIdEvent]);
+	// Prevent crash while reloading / installing Add-on
+	if (ev.url) {
+		var strEventURL = ev.url;
+		if (objTabSettings[iTabIdEvent] === undefined) {
+			createObjTab(iTabIdEvent, strEventURL);
+		} else {
+			updateObjTabSettingsURL(iTabIdEvent, strEventURL);
+		}
+		if (objTabSettings[iTabIdEvent].strMatchedURL !== '' && objTabSettings[iTabIdEvent].bUSE) {
+			if (objTabSettings[iTabIdEvent].bTabXorGlobal === true) {
+				strAcceptValue = arrOptionsAccept[objTabSettings[iTabIdEvent].iOdataTab];
+				console.log('TAB', strAcceptValue);
 			}
-			if (objTabSettings[iTabIdEvent].strMatchedURL !== '' && objTabSettings[iTabIdEvent].bUSE) {
-				if (objTabSettings[iTabIdEvent].bTabXorGlobal === true) {
-					strAcceptValue = arrOptionsAccept[objTabSettings[iTabIdEvent].iOdataTab];
-					// console.log('TAB', strAcceptValue);
-				}
-				else {
-					strAcceptValue = arrOptionsAccept[objTabSettings[iTabIdEvent].iOdataTab];
-					// console.log('GLOBAL', strAcceptValue);
-				}
-				if (objTabSettings[iTabIdEvent].bUSE) {
-					 if(strAcceptValue === 'text/xml') {
-					 	setHeader(ev.requestHeaders, 'Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3');
-					 } else {
-						setHeader(ev.requestHeaders, 'Accept', strAcceptValue);
-					 }
-				}
+			else {
+				strAcceptValue = arrOptionsAccept[objTabSettings[iTabIdEvent].iOdataTab];
+				console.log('GLOBAL', strAcceptValue);
+			}
+			if (objTabSettings[iTabIdEvent].bUSE) {
+					if(strAcceptValue === 'text/xml') {
+					setHeader(ev.requestHeaders, 'Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3');
+					} else {
+					setHeader(ev.requestHeaders, 'Accept', strAcceptValue);
+					}
 			}
 		}
 	}
@@ -471,9 +482,19 @@ function rewriteRequestAcceptHeader(ev) {
 }
 
 function updatePageContent(iTabId) {
-	if(strAcceptValue === 'text/xml' && browserName !== 'firefox') {
-		xBrowser.tabs.sendMessage( iCurrentTabId, {bXML: true});
+	console.log('updatePageContent. strAcceptValue: ' + strAcceptValue + ' | browserName: ' + browserName);
+	if(strAcceptValue === 'text/xml') {
+		if(browserName !== 'firefox') {
+			xBrowser.tabs.sendMessage( iCurrentTabId, {bXML: true});
+		} 
 	} else {
-		xBrowser.tabs.sendMessage( iTabId, {txt: 'loadJSONViewer'});
+		console.log('sendMessage loadJSONViewer');
+		if(browserName === 'firefox') {
+			xBrowser.tabs.sendMessage(iTabId, {txt: 'loadJSONViewer'}).then().catch(function(err) {
+				console.info('Receiving end not found\nIn most cases default FireFox JSON Viewer is active');
+			});
+		} else {
+			xBrowser.tabs.sendMessage(iTabId, {txt: 'loadJSONViewer'});
+		}
 	}
 }
