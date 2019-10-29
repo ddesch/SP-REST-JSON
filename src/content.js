@@ -2,10 +2,7 @@ var xBrowser;
 var browserName;
 
 if (typeof browser === 'undefined') {
-	/*
-		If browser is not defined, the plugin was loaded into Google Chrome.
-		Set the browser variable and other differences accordingly.
-	*/
+	// browser is undefined in Google Chrome
 	browserName = 'chrome';
 	xBrowser = chrome;
 } else if (window.MsInkCanvasContext !== undefined && typeof window.MsInkCanvasContext === 'function') {
@@ -16,12 +13,12 @@ if (typeof browser === 'undefined') {
 	xBrowser = browser;
 }
 
-
 xBrowser.runtime.onMessage.addListener(
 	function(objMsg, sender, sendResponse) {
 		if (objMsg.txt === 'loadJSONViewer') {
 			var preJSON = document.querySelector('body > pre');
-			if(preJSON != null) {
+			var divJSON = document.querySelector('div#json');
+			if(preJSON !== null && divJSON === null) {
 				var divJSON = document.createElement('div');
 				divJSON.id = 'json';
 				document.body.appendChild(divJSON);
@@ -29,7 +26,7 @@ xBrowser.runtime.onMessage.addListener(
 		
 				var objJSON = {};
 				var jsonViewer = new JSONViewer();
-				document.querySelector("#json").appendChild(jsonViewer.getContainer());
+				divJSON.appendChild(jsonViewer.getContainer());
 				try {
 					objJSON = JSON.parse(preJSON.innerText);
 				}
@@ -43,22 +40,61 @@ xBrowser.runtime.onMessage.addListener(
 				• optional: visualise to max level (-1 unlimited, 0..n)
 				• optional: collapse all at level (-1 unlimited, 0..n)
 				*/
-				jsonViewer.showJSON(objJSON, -1, 4);
+				jsonViewer.showJSON(objJSON, -1, 6);
 
 				var nodeListJSONValues = document.querySelectorAll('span[class^=type]');
+				// Search and replace absolut and relative URLs and convert them to clickable links
 				for(var i = 0; i < nodeListJSONValues.length; i++) {
-					if((/(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-\(\)]*.*[\w@?^=%&amp;\/~+#-\(\)])?/gim).test(nodeListJSONValues[i].innerText)) {
-						nodeListJSONValues[i].innerHTML = nodeListJSONValues[i].innerText.replace(/((http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-\(\)]*.*[\w@?^=%&amp;\/~+#-\(\)])?)/gim, "<a href=\"$1\">$1</a>");
+					if((/((http|ftp|https):\/\/[\w-]+(\.[\w-]+)+|\/)([\w.,@?^=%&amp;:\/~+#-\(\)]*.*[\w@?^=%&amp;\/~+#-\(\)])?/gim).test(nodeListJSONValues[i].innerText)) {
+						nodeListJSONValues[i].innerHTML = nodeListJSONValues[i].innerText.replace(/(((http|ftp|https):\/\/[\w-]+(\.[\w-]+)+|\/)([\w.,@?^=%&amp;:\/~+#-\(\)]*.*[\w@?^=%&amp;\/~+#-\(\)])?)/gim, "<a href=\"$1\">$1</a>");
 					}
 				}
 			}
 		} else if(objMsg.bXML !== undefined) {
-			var preXML;
-			if(browserName === 'chrome') {
-				preXML = document.querySelector('body > pre') ;
+			var strXML = '';
+			var docXML;
+			if (browserName === 'chrome') {
+				var preXML = document.querySelector('body > pre') ;
+				if (preXML !== null) {
+					strXML = preXML.innerText;
+				}
+			} else if (browserName === 'edge') {
+				strXML = document.body.innerHTML;
 			}
-			if(preXML != null) {
-				var docXML = new DOMParser().parseFromString(preXML.innerText, 'text/xml');
+			if(strXML !== undefined && strXML !== '' && document.querySelector('#webkit-xml-viewer-source-xml') === null) {
+				if(strXML.indexOf('<?xml') < 0) {
+					strXML = '<?xml version="1.0" encoding="utf-8"?>' + strXML;
+				}
+				docXML = new DOMParser().parseFromString(strXML, 'text/xml');
+				
+				/*
+				* Copyright (C) 2011 Google Inc. All rights reserved.
+				*
+				* Redistribution and use in source and binary forms, with or without
+				* modification, are permitted provided that the following conditions are
+				* met:
+				*
+				* 1. Redistributions of source code must retain the above copyright
+				* notice, this list of conditions and the following disclaimer.
+				*
+				* 2. Redistributions in binary form must reproduce the above
+				* copyright notice, this list of conditions and the following disclaimer
+				* in the documentation and/or other materials provided with the
+				* distribution.
+				*
+				* THIS SOFTWARE IS PROVIDED BY GOOGLE INC. AND ITS CONTRIBUTORS
+				* “AS IS” AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+				* LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+				* A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL GOOGLE INC.
+				* OR ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+				* SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+				* LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+				* DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+				* THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+				* (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+				* OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+				*/
+				
 				var nodeParentPairs = [];
 				// Script entry point.
 				var tree;
@@ -92,23 +128,23 @@ xBrowser.runtime.onMessage.addListener(
 					tree = createHTMLElement('div');
 					body.appendChild(tree);
 					tree.classList.add('pretty-print');
-					// window.onload = sourceXMLLoaded;
 					sourceXMLLoaded();
 				}
 				function sourceXMLLoaded()
 				{
-					// var sourceXML = document.getElementById('webkit-xml-viewer-source-xml');
 					var sourceXML = docXML;
 					if (!sourceXML)
 						return; // Stop if some XML tree extension is already processing this document
-					for (var child = sourceXML.firstChild; child; child = child.nextSibling)
+					for (var child = sourceXML.firstChild; child; child = child.nextSibling) {
 						nodeParentPairs.push({parentElement: tree, node: child});
-					for (var i = 0; i < nodeParentPairs.length; i++)
+					}
+					for (var i = 0; i < nodeParentPairs.length; i++) {
 						processNode(nodeParentPairs[i].parentElement, nodeParentPairs[i].node);
-					// drawArrows();
+					}
 					initButtons();
-					if (typeof(onAfterWebkitXMLViewerLoaded) == 'function')
-					onAfterWebkitXMLViewerLoaded();
+					if (typeof(onAfterWebkitXMLViewerLoaded) === 'function') {
+						onAfterWebkitXMLViewerLoaded();
+					}
 				}
 				// Tree processing.
 				function processNode(parentElement, node)
