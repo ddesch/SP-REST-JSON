@@ -5,6 +5,12 @@ WebExtension that modifies request header for SharePoint REST API calls to get J
 * **Firefox:** https://addons.mozilla.org/firefox/addon/sp-rest-json/
 * **Chrome:** https://chrome.google.com/webstore/detail/sp-rest-json/kcdolhjbipnfgefpjaopfbjbannphidh
 
+### Install
+npm i
+
+### Generate new build
+gulp
+
 ### Details
 Once a tab is active, the current URL is matched against the following strings:
 * /_api/web/
