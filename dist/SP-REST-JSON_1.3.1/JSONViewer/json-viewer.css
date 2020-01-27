@@ -3,6 +3,8 @@
 	padding-left: 20px;
 	font-family: Consolas, monospace !important;
 	font-size: 11px !important;
+	white-space: pre-wrap;
+	word-wrap: break-word;
 }
 
 .json-viewer ul {
