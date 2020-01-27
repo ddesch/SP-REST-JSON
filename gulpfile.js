@@ -9,6 +9,7 @@
 
 const gulp = require('gulp');
 const args = require('gulp-args');
+const map = require('map-stream');
 const replace = require('gulp-replace');
 const zip = require('gulp-zip');
 let publishVersion = args.publishVersion;
@@ -58,3 +59,63 @@ gulp.task('zip', function(){
 });
 
 gulp.task('default', gulp.series('build', 'zip'));
+
+// npm install map-stream
+function logMatches(regex) {
+  return map(function(file, done) {
+    // file.contents.toString().match(regex).forEach(function(match) {
+    //   console.log(file.path + ': ' + match);
+      // let matches = file.contents.toString().match(regex);
+      // console.log(file.path + ': ' + matches[0]);
+      // console.log(file.path + ': ' + matches[1]);
+      file.contents.toString().replace(regex, '$1' + '.1');
+    // });
+    done(null, file);
+  });
+}
+
+gulp.task('getVer', function(){
+  return gulp.src('./src/manifest.json')
+    .pipe(logMatches(/"version": "(\d+\.\d+\.\d+)"/gm));
+});
+
+function incrementVersion(arrVer) {
+  if(args.major) {
+    arrVer[0] = String(Number(arrVer[0]) + 1);
+  }
+  if(args.minor) {
+    arrVer[1] = String(Number(arrVer[1]) + 1);
+  }
+  if(args.patch) {
+    arrVer[2] = String(Number(arrVer[2]) + 1);
+  }
+  const strVer = arrVer.join('.');
+  return strVer;
+}
+
+gulp.task('updateVersion', function() {
+  if(args.major || args.minor || args.patch) {
+    let strVer;
+    return gulp.src('./src/manifest.json')
+    .pipe(replace(/"version": "\d+\.\d+\.\d+"/, function(match){
+      const arrVer = match.split(/[\."]/);
+      const lenArrVer = arrVer.length;
+      for(let i = lenArrVer; i >= 0; i--) {
+        if(arrVer[i] === '' || isNaN(Number(arrVer[i]))) {
+          arrVer.splice(i, 1);
+        }
+      }
+      strVer = incrementVersion(arrVer);
+      gulp.src('./src/SPRESTJSON.js')
+      .pipe(replace(/\d+\.\d+\.\d+/, strVer))
+      .pipe(gulp.dest('./src'));
+
+      return '"version": "' + strVer + '"';
+    }))
+    .pipe(gulp.dest('./src'));
+  } else {
+    console.log('Please use gulp updateVersion with one or more or all of this options:');
+    console.log('--major --minor --patch');
+    return Promise.resolve('the value is ignored');
+  }
+});

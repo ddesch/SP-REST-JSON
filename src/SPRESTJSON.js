@@ -1,6 +1,6 @@
 /**
  * 
- *	SP REST JSON, v. 1.3.0
+ *	SP REST JSON, v. 1.3.1
  *
  *	by Daniel Desch <danieldesch@gmx.de>
  *

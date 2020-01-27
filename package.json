@@ -7,7 +7,8 @@
     "test": "test"
   },
   "dependencies": {
-    "gulp": "^4.0.2"
+    "gulp": "^4.0.2",
+    "map-stream": "0.0.7"
   },
   "devDependencies": {
     "gulp-args": "^1.0.0",

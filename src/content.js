@@ -45,8 +45,10 @@ xBrowser.runtime.onMessage.addListener(
 				var nodeListJSONValues = document.querySelectorAll('span[class^=type]');
 				// Search and replace absolut and relative URLs and convert them to clickable links
 				for(var i = 0; i < nodeListJSONValues.length; i++) {
-					if((/((http|ftp|https):\/\/[\w-]+(\.[\w-]+)+|\/)([\w.,@?^=%&amp;:\/~+#-\(\)]*.*[\w@?^=%&amp;\/~+#-\(\)])?/gim).test(nodeListJSONValues[i].innerText)) {
-						nodeListJSONValues[i].innerHTML = nodeListJSONValues[i].innerText.replace(/(((http|ftp|https):\/\/[\w-]+(\.[\w-]+)+|\/)([\w.,@?^=%&amp;:\/~+#-\(\)]*.*[\w@?^=%&amp;\/~+#-\(\)])?)/gim, "<a href=\"$1\">$1</a>");
+					if(nodeListJSONValues[i].innerText.indexOf('<') !== 1 ) {
+						if((/((http|ftp|https):\/\/[\w-]+(\.[\w-]+)+|\/)([\w.,@?^=%&amp;:\/~+#-\(\)]*.*[\w@?^=%&amp;\/~+#-\(\)])?/gim).test(nodeListJSONValues[i].innerText)) {
+							nodeListJSONValues[i].innerHTML = nodeListJSONValues[i].innerText.replace(/(((http|ftp|https):\/\/[\w-]+(\.[\w-]+)+|\/)([\w.,@?^=%&amp;:\/~+#-\(\)]*.*[\w@?^=%&amp;\/~+#-\(\)])?)/gim, "<a href=\"$1\">$1</a>");
+						}
 					}
 				}
 			}
