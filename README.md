@@ -4,6 +4,7 @@ WebExtension that modifies request header for SharePoint REST API calls to get J
 ### Available for
 * **Firefox:** https://addons.mozilla.org/firefox/addon/sp-rest-json/
 * **Chrome:** https://chrome.google.com/webstore/detail/sp-rest-json/kcdolhjbipnfgefpjaopfbjbannphidh
+* **Edge:** https://microsoftedge.microsoft.com/addons/detail/mdjmgobkbnldmmchokoaefcaldhpdfoi
 
 ### Install
 npm i
