@@ -1,4 +1,8 @@
 # Change Log
+## 1.4.0 (2020-01-24)
+**Implemented enhancement:**
+* Add option to set font-size for JSON viewer. In **Firefox** only woriking when default JSON viewer is deactivated (about:config --> `devtools.jsonview.enabled`  set to `false`).
+
 ## 1.3.1 (2020-01-27)
 **Bugfix**
 * **Chrome**: The `SchemaXml` property of a list wasn't loaded correctly

@@ -3,7 +3,14 @@ var inpNewAcceptValue = document.querySelector('#newAcceptValue');
 // var iOpt = 0;
 var btnAddFilterOption = document.querySelector('#addFilterOption');
 var btnRestoreDefault = document.querySelector('#restoreDefault');
-var pFooter = document.querySelector('#footer');
+var pFilterFooter = document.querySelector('#filterFooter');
+var pFontSize = document.querySelector('#fontSize');
+var inputFontSize = pFontSize.querySelector('input');
+var btnEditFontsize = pFontSize.querySelector('.editOption');
+var btnSaveFontSize = pFontSize.querySelector('.saveOption');
+var btnCancelFontSize = pFontSize.querySelector('.cancelOption');
+var pFirefoxInfo = document.querySelector('p#firefoxInfo');
+pFirefoxInfo.style.display = 'none';
 var portGlobalOptions;
 var strUrlEdit = '';
 var iSelectedIndexEdit = -1;
@@ -25,6 +32,7 @@ window.addEventListener('load', function(){
 	} else {
 		browserName = 'firefox'
 		xBrowser = browser;
+		pFirefoxInfo.style.display = 'block';
 	}
 	portGlobalOptions = xBrowser.runtime.connect({ name: 'portGlobalOptions' });
 
@@ -41,6 +49,20 @@ window.addEventListener('load', function(){
 		addFilterOption('', -1);
 	});
 	
+	inputFontSize.disabled = true;
+	btnEditFontsize.addEventListener('click', function(){
+		editFontSize();
+	});
+
+	btnCancelFontSize.style.display = 'none';
+	btnCancelFontSize.addEventListener('click', function(){
+		cancelFontSize();
+	});
+	btnSaveFontSize.style.display = 'none';
+	btnSaveFontSize.addEventListener('click', function(ev){
+		saveOptions(ev);
+	});
+
 	btnRestoreDefault.addEventListener('click', function(){
 		restoreDefault();
 	});
@@ -51,8 +73,8 @@ function addFilterOption(strUrl, iSelectedIndex) {
 		btnAddFilterOption.disabled = true;
 		bNew = true;
 	}
-	var p = document.createElement('p');
-	p.className = 'filter';
+	var pFilter = document.createElement('p');
+	pFilter.className = 'filter';
 
 	// var span = document.createElement('span');
 	// p.appendChild(span);
@@ -63,7 +85,7 @@ function addFilterOption(strUrl, iSelectedIndex) {
 	if (iSelectedIndex !== -1) {
 		inputUrl.disabled = true;
 	}
-	p.appendChild(inputUrl);
+	pFilter.appendChild(inputUrl);
 	// span.appendChild(inputUrl);
 
 	var selectAccept = document.createElement('select');
@@ -79,7 +101,7 @@ function addFilterOption(strUrl, iSelectedIndex) {
 	if (iSelectedIndex !== -1) {
 		selectAccept.disabled = true;
 	}
-	p.appendChild(selectAccept);
+	pFilter.appendChild(selectAccept);
 	// span.appendChild(selectAccept);
 
 	var btnEditFilter = document.createElement('button');
@@ -92,8 +114,8 @@ function addFilterOption(strUrl, iSelectedIndex) {
 	if (iSelectedIndex === -1) {
 		btnEditFilter.style.display = 'none';
 	}
-	btnEditFilter.addEventListener('click', editOption);
-	p.appendChild(btnEditFilter);
+	btnEditFilter.addEventListener('click', editFilterOption);
+	pFilter.appendChild(btnEditFilter);
 	
 	var btnSaveFilter = document.createElement('button');
 	btnSaveFilter.type = 'button';
@@ -104,20 +126,19 @@ function addFilterOption(strUrl, iSelectedIndex) {
 		btnSaveFilter.style.display = 'none';
 	}
 	btnSaveFilter.addEventListener('click', saveOptions);
-	p.appendChild(btnSaveFilter);
-	p.appendChild(btnSaveFilter);
+	pFilter.appendChild(btnSaveFilter);
 	
-	var btnEndEdit = document.createElement('button');
-	btnEndEdit.type = 'button';
-	btnEndEdit.textContent = '🔚';
-	btnEndEdit.textContent = '❌';
-	btnEndEdit.title = 'Cancel edit';
-	btnEndEdit.className = 'iconButton endEditOption';
+	var btnCancel = document.createElement('button');
+	btnCancel.type = 'button';
+	btnCancel.textContent = '🔚';
+	btnCancel.textContent = '❌';
+	btnCancel.title = 'Cancel edit';
+	btnCancel.className = 'iconButton cancelOption';
 	if (iSelectedIndex !== -1) {
-		btnEndEdit.style.display = 'none';
+		btnCancel.style.display = 'none';
 	}
-	btnEndEdit.addEventListener('click', endEditOption);
-	p.appendChild(btnEndEdit);
+	btnCancel.addEventListener('click', cancelFilterOption);
+	pFilter.appendChild(btnCancel);
 
 	var btnRemoveFilter = document.createElement('button');
 	btnRemoveFilter.type = 'button';
@@ -128,57 +149,57 @@ function addFilterOption(strUrl, iSelectedIndex) {
 	if (iSelectedIndex === -1) {
 		btnRemoveFilter.style.display = 'none';
 	}
-	btnRemoveFilter.addEventListener('click', removeOption);
-	p.appendChild(btnRemoveFilter);
+	btnRemoveFilter.addEventListener('click', removeFilterOption);
+	pFilter.appendChild(btnRemoveFilter);
 	
 	if (iSelectedIndex === -1) {
-		// Hide all Edit + Remove buttons
-		var nodeListBtnEdit = document.querySelectorAll('.editOption, .removeOption');
+		// Hide all Edit + Remove buttons in <p class="filter">
+		var nodeListBtnEdit = document.querySelectorAll('p.filter .editOption, p.filter .removeOption');
 		nodeListBtnEdit.forEach(function(btn) {
 			btn.style.display = 'none';
 		});
 	}
 
-	pFooter.parentNode.insertBefore(p, pFooter);
+	pFilterFooter.parentNode.insertBefore(pFilter, pFilterFooter);
 	// iOpt++;
 }
 
-function editOption(ev) {
+function editFilterOption(ev) {
 	var btnEditOption = ev.target;
-	var p = btnEditOption.parentNode;
-	var inputUrl = p.querySelector('.url');
-	var selectAccept = p.querySelector('.accept');
+	var pFilter = btnEditOption.parentNode;
+	var inputUrl = pFilter.querySelector('.url');
+	var selectAccept = pFilter.querySelector('.accept');
 	strUrlEdit = inputUrl.value;
 	iSelectedIndexEdit = selectAccept.selectedIndex;
 
-	p.querySelector('.url').disabled = false;
-	p.querySelector('.accept').disabled = false;
+	pFilter.querySelector('.url').disabled = false;
+	pFilter.querySelector('.accept').disabled = false;
 	btnAddFilterOption.disabled = true;
 	// Hide all Edit + Remove buttons
 	var nodeListBtnEdit = document.querySelectorAll('.editOption, .removeOption');
 	nodeListBtnEdit.forEach(function(btn) {
 		btn.style.display = 'none';
 	});
-	p.querySelector('.saveOption').style.display = 'inline-block';
-	p.querySelector('.endEditOption').style.display = 'inline-block';
+	pFilter.querySelector('.saveOption').style.display = 'inline-block';
+	pFilter.querySelector('.cancelOption').style.display = 'inline-block';
 	// if (iOpt > 1) {
 	// if (document.querySelectorAll('p.filter').length > 1) {
 	// 	p.querySelector('.removeOption').style.display = 'inline-block';
 	// }
 }
 
-function removeOption(ev) {
+function removeFilterOption(ev) {
 	var btn = ev.target;
-	var p = btn.parentNode;
-	var inputUrl = p.querySelector('.url');
-	var selectAccept = p.querySelector('.accept');
+	var pFilter = btn.parentNode;
+	var inputUrl = pFilter.querySelector('.url');
+	var selectAccept = pFilter.querySelector('.accept');
 	inputUrl.style.border = '1px dashed red';
 	selectAccept.style.border = '1px dashed red';
 	var strUrl = inputUrl.value;
 	var strAccept = selectAccept.selectedOptions[0].innerText;
 	bRemove = confirm('Remove option?\n' + 'URL: ' + strUrl + '\nAccept: ' + strAccept);
 	if( bRemove ) {
-		p.outerHTML = '';
+		pFilter.outerHTML = '';
 		// iOpt--;
 		saveOptions(ev);
 	} else {
@@ -187,27 +208,27 @@ function removeOption(ev) {
 	}
 }
 
-function endEditOption(ev) {
+function cancelFilterOption(ev) {
 	btnAddFilterOption.disabled = false;
 	var btn = ev.target;
-	var p = btn.parentNode;
+	var pFilter = btn.parentNode;
 	// p.outerHTML = '';
 	// iOpt--;
 	// saveOptions(ev);
-	var inputUrl = p.querySelector('.url');
-	var selectAccept = p.querySelector('.accept');
+	var inputUrl = pFilter.querySelector('.url');
+	var selectAccept = pFilter.querySelector('.accept');
 	inputUrl.value = strUrlEdit;
 	selectAccept.selectedIndex = iSelectedIndexEdit;
 	inputUrl.disabled = true;
 	selectAccept.disabled = true;
-	p.querySelector('.saveOption').style.display = 'none';
-	p.querySelector('.removeOption').style.display = 'none';
-	p.querySelector('.endEditOption').style.display = 'none';
+	pFilter.querySelector('.saveOption').style.display = 'none';
+	pFilter.querySelector('.removeOption').style.display = 'none';
+	pFilter.querySelector('.cancelOption').style.display = 'none';
 
 	if(bNew) {
-		p.outerHTML = '';
+		pFilter.outerHTML = '';
 		if (document.querySelectorAll('p.filter').length === 1) {
-			p.querySelector('.removeOption').style.display = 'none';
+			pFilter.querySelector('.removeOption').style.display = 'none';
 		}
 		// iOpt--;
 	}
@@ -219,6 +240,29 @@ function endEditOption(ev) {
 	});
 }
 
+function editFontSize() {
+	inputFontSize.disabled = false;
+	btnAddFilterOption.disabled = true;
+	// Hide all Edit + Remove buttons
+	var nodeListBtnEdit = document.querySelectorAll('.editOption, .removeOption');
+	nodeListBtnEdit.forEach(function(btn) {
+		btn.style.display = 'none';
+	});
+	btnSaveFontSize.style.display = 'inline-block';
+	btnCancelFontSize.style.display = 'inline-block';
+}
+
+function cancelFontSize() {
+	btnAddFilterOption.disabled = false;
+	inputFontSize.disabled = true;
+	btnSaveFontSize.style.display = 'none';
+	btnCancelFontSize.style.display = 'none';
+	// Show all Edit + Remove buttons
+	var nodeListBtnEdit = document.querySelectorAll('.removeOption, .editOption');
+	nodeListBtnEdit.forEach(function(btn) {
+		btn.style.display = 'inline-block';
+	});
+}
 
 function saveOptions(ev) {
 	var btn = ev.target;
@@ -227,28 +271,46 @@ function saveOptions(ev) {
 		var inputUrl = p.querySelector('.url');
 		var selectAccept = p.querySelector('.accept');
 		var bError = false;
-		if (inputUrl.value === '') {
-			inputUrl.classList.add('error');
+		if (inputFontSize.value === '') {
+			inputFontSize.classList.add('error');
 			bError = true;
 		}
 		else {
-			inputUrl.classList.remove('error');
+			inputFontSize.classList.remove('error');
 		}
-		if (selectAccept.selectedIndex === -1) {
-			selectAccept.classList.add('error');
-			bError = true;
-		}
-		else {
-			selectAccept.classList.remove('error');
+		if (inputUrl && selectAccept) {
+			if (inputUrl.value === '') {
+				inputUrl.classList.add('error');
+				bError = true;
+			}
+			else {
+				inputUrl.classList.remove('error');
+			}
+			if (selectAccept.selectedIndex === -1) {
+				selectAccept.classList.add('error');
+				bError = true;
+			}
+			else {
+				selectAccept.classList.remove('error');
+			}
 		}
 		if (bError) {
 			return false;
 		}
-		inputUrl.disabled = true;
-		selectAccept.disabled = true;
+		inputFontSize.disabled = true;
+		if (inputUrl) {
+			inputUrl.disabled = true;
+		}
+		if (selectAccept) {
+			selectAccept.disabled = true;
+		}
 		p.querySelector('.saveOption').style.display = 'none';
-		p.querySelector('.removeOption').style.display = 'none';
-		p.querySelector('.endEditOption').style.display = 'none';
+		if (p.querySelector('.removeOption')) {
+			p.querySelector('.removeOption').style.display = 'none';
+		}
+		p.querySelector('.cancelOption').style.display = 'none';
+		btnSaveFontSize.style.display = 'none';
+		btnCancelFontSize.style.display = 'none';
 	}
 	btnAddFilterOption.disabled = false;
 
@@ -261,9 +323,9 @@ function saveOptions(ev) {
 	var arrFilterURLs = [];
 	var arrFilterOptionsIndex = [];
 	var i;
-	var nodeListParagraphs = document.querySelectorAll('p.filter');
-	for(i = 0; i < nodeListParagraphs.length; i++) {
-		var p = nodeListParagraphs[i];
+	var nodeListParFilter = document.querySelectorAll('p.filter');
+	for(i = 0; i < nodeListParFilter.length; i++) {
+		var p = nodeListParFilter[i];
 		var inputUrl = p.querySelector('.url');
 		var selectAccept = p.querySelector('.accept');
 		arrFilterURLs.push(inputUrl.value);
@@ -272,27 +334,27 @@ function saveOptions(ev) {
 	var objOptions = {
 		arrFilterURLs: arrFilterURLs
 		,arrFilterOptionsIndex: arrFilterOptionsIndex
+		,fontSize: inputFontSize.value
 	};
 
-	if (document.querySelectorAll('p.filter').length === 1) {
-		p = document.querySelector('p.filter');
-		p.querySelector('.removeOption').style.display = 'none';
+	if (nodeListParFilter.length === 1) {
+		nodeListParFilter[0].querySelector('.removeOption').style.display = 'none';
 	}
 	
-	if(browserName !== 'firefox') {
-		xBrowser.storage.sync.set(objOptions, reloadFromStorage);
-	}
-	else {
+	if(browserName === 'firefox') {
 		xBrowser.storage.sync
 			.set(objOptions)
 			.then(reloadFromStorage);
+		}
+	else {
+		xBrowser.storage.sync.set(objOptions, reloadFromStorage);
 	}
 }
 
 function setValuesFromStorage(res) {
-	if(res.arrOptionsAccept != undefined) {
+	if(res.arrOptionsAccept !== undefined) {
 		arrOptionsAccept = res.arrOptionsAccept;
-		if(res.arrFilterURLs != undefined) {
+		if(res.arrFilterURLs !== undefined) {
 			for(var i = 0; i < res.arrFilterURLs.length; i++) {
 				addFilterOption(res.arrFilterURLs[i], res.arrFilterOptionsIndex[i]);
 			}
@@ -301,6 +363,11 @@ function setValuesFromStorage(res) {
 				p.querySelector('.removeOption').style.display = 'none';
 			}
 		}
+	}
+	if (res.fontSize !== undefined) {
+		inputFontSize.value = res.fontSize;
+	} else {
+		inputFontSize.value = '11';
 	}
 }
 

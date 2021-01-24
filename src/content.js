@@ -26,6 +26,34 @@ xBrowser.runtime.onMessage.addListener(
 		
 				var objJSON = {};
 				var jsonViewer = new JSONViewer();
+				if (objMsg.fontSize) {
+					var style = document.createElement('style');
+					var strCSS =
+					`html {
+						--json-font-size: ${objMsg.fontSize}px;
+					}
+					pre.json-viewer {
+						font-size: var(--json-font-size) !important;
+						padding-left: 1.8em;
+					}
+					.treeTable {
+						font-size: var(--json-font-size);
+					}
+					
+					.treeTable .treeLabelCell, .treeTable .treeValueCell {
+						line-height: unset;
+						height: auto;
+					}
+					
+					.treeTable .treeRow .treeIcon {
+						vertical-align: middle;
+						width: var(--json-font-size);
+						height: var(--json-font-size);
+					background-size: var(--json-font-size);
+					}`;
+					style.textContent = strCSS;
+					document.body.appendChild(style);
+				}
 				divJSON.appendChild(jsonViewer.getContainer());
 				try {
 					objJSON = JSON.parse(preJSON.innerText);

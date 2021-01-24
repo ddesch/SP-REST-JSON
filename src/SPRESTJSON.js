@@ -1,6 +1,6 @@
 /**
  * 
- *	SP REST JSON, v. 1.3.1
+ *	SP REST JSON, v. 1.4.0
  *
  *	by Daniel Desch <danieldesch@gmx.de>
  *
@@ -39,6 +39,7 @@ var arrDefaultFilterOptionsIndex = [
 	0,
 	0
 ];
+var fontSize = 11;
 
 var xBrowser;
 var browserName;
@@ -79,6 +80,9 @@ function setValuesFromStorage(res) {
 	} else {
 		arrFilterURLs = arrDefaultFilterURLs;
 		arrFilterOptionsIndex = arrDefaultFilterOptionsIndex;
+	}
+	if (res.fontSize !== undefined) {
+		fontSize = res.fontSize;
 	}
 	xBrowser.runtime.onConnect.addListener(connected);
 
@@ -144,6 +148,7 @@ function setValuesFromStorage(res) {
 	// listen to tab URL changes
 	xBrowser.tabs.onUpdated.addListener(function (iTabId, changeInfo, tab) {
 		// console.log(changeInfo.status); // CRASHES in EDGE!
+		console.log(xBrowser.tabs.onUpdated); // Ok in EDGE???
 		if (changeInfo.status === 'complete') {
 			var strURL = tab.url;
 			iWindowId = tab.windowid;
@@ -176,6 +181,7 @@ function setValuesFromStorage(res) {
 	xBrowser.tabs.onActivated.addListener(
 		function (ev) {
 			console.log('xBrowser.tabs.onActivated.addListener');
+			console.info('xBrowser.tabs.onActivated.addListener');
 			iWindowId = ev.windowId;
 			iCurrentTabId = ev.tabId;
 			var strURL = '';
@@ -363,6 +369,7 @@ function onError(error) {
 
 function prepareUpdateTabURL(activeTab) {
 	console.log(activeTab);
+	console.info(activeTab);
 	if (activeTab !== undefined) {
 		updateObjTabSettingsURL(activeTab.id, activeTab.url);
 		console.log(objTabSettings[iCurrentTabId]);
@@ -490,11 +497,11 @@ function updatePageContent(iTabId) {
 	} else {
 		console.log('sendMessage loadJSONViewer');
 		if(browserName === 'firefox') {
-			xBrowser.tabs.sendMessage(iTabId, {txt: 'loadJSONViewer'}).then().catch(function(err) {
-				console.info('Receiving end not found\nIn most cases default FireFox JSON Viewer is active');
+			xBrowser.tabs.sendMessage(iTabId, {txt: 'loadJSONViewer', fontSize: fontSize}).then().catch(function(err) {
+				console.info('Receiving end not found --> default FireFox JSON Viewer is active');
 			});
 		} else {
-			xBrowser.tabs.sendMessage(iTabId, {txt: 'loadJSONViewer'});
+			xBrowser.tabs.sendMessage(iTabId, {txt: 'loadJSONViewer', fontSize: fontSize});
 		}
 	}
 }

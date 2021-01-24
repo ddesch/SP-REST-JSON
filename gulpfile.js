@@ -10,9 +10,14 @@
 const gulp = require('gulp');
 const args = require('gulp-args');
 const map = require('map-stream');
+const clean = require('gulp-clean');
+const del = require('del');
+const fs = require("fs"); // Or `import fs from "fs";` with ESM
+
 const replace = require('gulp-replace');
 const zip = require('gulp-zip');
 let publishVersion = args.publishVersion;
+let distPath;
 
 gulp.task('build', function() {
   if(publishVersion !== undefined) {
@@ -26,6 +31,13 @@ gulp.task('build', function() {
     publishVersion = 'latest';
   }
   
+  distPath = './dist/SP-REST-JSON_' + publishVersion;
+  // Check in the current dist folder already exists
+  if (fs.existsSync(distPath)) {
+    // Delete all folders and files in the dist folder
+    del(distPath + '/**');
+  }
+
   // Take all .js files of the 'src'-folder
   gulp.src(['./src/**/*.js'])
   // Replace all console.log lines
@@ -35,14 +47,15 @@ gulp.task('build', function() {
   // Replace all empty lines
   .pipe(replace(/^\s*\n/gm, ''))
   // Write the files to the current 'SP-REST-JSON_' folder in the 'dist'-folder
-  .pipe(gulp.dest('./dist/SP-REST-JSON_' + publishVersion));
+  .pipe(gulp.dest(distPath));
 
   // Copy all Other files (excluding the .js-files) from 'src'-folder
   // AND the 'LICENSE'-file
   // gulp.src(['./src/**', '!./src/**/*.js', 'LICENSE'])
   return gulp.src(['./src/**', '!./src/**/*.js', 'LICENSE'])
   // Write them to the current 'SP-REST-JSON_'-folder in the 'dist'-folder
-  .pipe(gulp.dest('./dist/SP-REST-JSON_' + publishVersion));
+  .pipe(gulp.dest(distPath));
+ 
 });
 
 gulp.task('zip', function(){
@@ -92,6 +105,11 @@ function incrementVersion(arrVer) {
   const strVer = arrVer.join('.');
   return strVer;
 }
+
+
+gulp.task('clean', function() {
+  return del(distPath + '/*.*');
+});
 
 gulp.task('updateVersion', function() {
   if(args.major || args.minor || args.patch) {
