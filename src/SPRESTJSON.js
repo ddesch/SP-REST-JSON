@@ -27,12 +27,14 @@ var arrFilterURLs = [];
 var arrDefaultFilterURLs = [
 	'/_api/web/',
 	'/_api/site/',
+	'/_api/lists/',
 	'/_api/sp.',
 	'/_api/search',
 	'/_vti_bin/ListData.svc'
 ];
 var arrFilterOptionsIndex = [];
 var arrDefaultFilterOptionsIndex = [
+	0,
 	0,
 	0,
 	0,
