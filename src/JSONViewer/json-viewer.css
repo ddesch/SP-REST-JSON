@@ -72,3 +72,35 @@
 .json-viewer a {
 	color: #0B7500;
 }
+
+@media (prefers-color-scheme: dark) {
+	body {
+		color: #eee;
+		background: #121212;
+	}
+	
+	.json-viewer,
+	.json-viewer a.list-link,
+	.json-viewer ul li {
+		color: #fff;
+	}
+
+	.json-viewer .items-ph {
+		color: rgb(200, 200, 200);
+	}
+
+	.json-viewer a,
+	.json-viewer ul li .type-string,
+	.json-viewer ul li .type-number,
+	.json-viewer ul li .type-date {
+		color: rgb(81, 170, 61);
+	}
+	
+	.json-viewer ul li .type-boolean {
+		color: rgb(112, 65, 255);
+	}
+	
+	.json-viewer ul li .type-null {
+		color: rgb(255, 96, 59);
+	}
+}
