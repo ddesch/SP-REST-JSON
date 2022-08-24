@@ -1,4 +1,8 @@
 # Change Log
+## 1.5.1 (2022-08-24)
+**Bugfix:**
+* Problem with darkmode
+
 ## 1.5.0 (2022-08-22)
 **Implemented enhancement:**
 * Add dark mode colors for JSON Viewer
