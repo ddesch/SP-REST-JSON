@@ -30,7 +30,9 @@ if (typeof browser === 'undefined') {
 }
 
 btnOpenGeneralOptions.addEventListener('click', function () {
-	strOptionsURL = xBrowser.extension.getURL('') + 'options.html';
+	// getURL: Removed with manifest v3
+	// strOptionsURL = xBrowser.extension.getURL('') + 'options.html';
+	strOptionsURL = xBrowser.runtime.getURL('') + 'options.html';
 	if (browserName !== 'firefox') {
 		xBrowser.tabs.query({ currentWindow: true }, checkTabs);
 	}

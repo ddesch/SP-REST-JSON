@@ -1,6 +1,6 @@
 /**
  * 
- *	SP REST JSON, v. 1.5.0
+ *	SP REST JSON, v. 1.6.0
  *
  *	by Daniel Desch <danieldesch@gmx.de>
  *
@@ -233,10 +233,10 @@ function updateIcon(iTabId) {
 		if (objTab.strMatchedURL !== '') {
 			if (objTab.bUSE) {
 				// var objTab = objTabSettings[activeTab[0].id];
-				if (xBrowser.browserAction.setIcon) {
+				if (xBrowser.action.setIcon) {
 					setCrossBrowserIcon('active');
 				}
-				if (xBrowser.browserAction.enable) {
+				if (xBrowser.action.enable) {
 					strTooltip += 'Global matched URL: ' + objTab.strMatchedURL
 					var iFilterURL = -1;
 					iFilterURL = arrFilterURLs.findIndex(function (filterURL) {
@@ -249,20 +249,20 @@ function updateIcon(iTabId) {
 				}
 			}
 			else {
-				if (xBrowser.browserAction.setIcon) {
+				if (xBrowser.action.setIcon) {
 					setCrossBrowserIcon('disabled');
 					strTooltip += 'disabled';
 				}
 			}
-			xBrowser.browserAction.setTitle({
+			xBrowser.action.setTitle({
 				title: strTooltip
 			});
 		}
 		else {
-			if (xBrowser.browserAction.setIcon) {
+			if (xBrowser.action.setIcon) {
 				setCrossBrowserIcon('inactive');
 			}
-			if (!xBrowser.browserAction.enable) {
+			if (!xBrowser.action.enable) {
 				// MOBILE
 				strTooltip = 'SP REST JSON\n\n';
 			}
@@ -270,7 +270,7 @@ function updateIcon(iTabId) {
 				// DESKTOP
 				strTooltip += 'Only active when a SharePoint REST API URL is loaded';
 			}
-			xBrowser.browserAction.setTitle({
+			xBrowser.action.setTitle({
 				title: strTooltip
 			});
 		}
@@ -316,14 +316,14 @@ function connected(objPort) {
 
 function setCrossBrowserIcon(strFileName) {
 	if (browserName === 'edge') {
-		xBrowser.browserAction.setIcon({
+		xBrowser.action.setIcon({
 			path: {
 				19: 'icons/16/' + strFileName + '.png'
 				,38: 'icons/32/' + strFileName + '.png'
 			}
 		});
 	} else {
-		xBrowser.browserAction.setIcon({
+		xBrowser.action.setIcon({
 			path: {
 				16: 'icons/16/' + strFileName + '.png'
 				,32: 'icons/32/' + strFileName + '.png'
