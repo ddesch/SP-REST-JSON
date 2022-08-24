@@ -1,4 +1,4 @@
-.json-viewer {
+.SP-REST-JSON.json-viewer {
 	color: #000;
 	padding-left: 20px;
 	font-family: Consolas, monospace !important;
@@ -7,7 +7,7 @@
 	word-wrap: break-word;
 }
 
-.json-viewer ul {
+.SP-REST-JSON.json-viewer ul {
 	list-style-type: none;
 	margin: 0;
 	margin: 0 0 0 1px;
@@ -15,35 +15,35 @@
 	padding-left: 2em;
 }
 
-.json-viewer .hide {
+.SP-REST-JSON.json-viewer .hide {
 	display: none;
 }
 
-.json-viewer ul li .type-string,
-.json-viewer ul li .type-date {
+.SP-REST-JSON.json-viewer ul li .type-string,
+.SP-REST-JSON.json-viewer ul li .type-date {
 	color: #0B7500;
 }
 
-.json-viewer ul li .type-boolean {
+.SP-REST-JSON.json-viewer ul li .type-boolean {
 	color: #1A01CC;
 	font-weight: bold;
 }
 
-.json-viewer ul li .type-number {
+.SP-REST-JSON.json-viewer ul li .type-number {
 	color: #1A01CC;
 }
 
-.json-viewer ul li .type-null {
+.SP-REST-JSON.json-viewer ul li .type-null {
 	color: red;
 }
 
-.json-viewer a.list-link {
+.SP-REST-JSON.json-viewer a.list-link {
 	color: #000;
 	text-decoration: none;
 	position: relative;
 }
 
-.json-viewer a.list-link:before {
+.SP-REST-JSON.json-viewer a.list-link:before {
 	color: #aaa;
 	content: "\25BC";
 	position: absolute;
@@ -52,55 +52,50 @@
 	left: -1em;
 }
 
-.json-viewer a.list-link.collapsed:before {
+.SP-REST-JSON.json-viewer a.list-link.collapsed:before {
 	content: "\25BA";
 }
 
-.json-viewer a.list-link.empty:before {
+.SP-REST-JSON.json-viewer a.list-link.empty:before {
 	content: "";
 }
 
-.json-viewer .items-ph {
+.SP-REST-JSON.json-viewer .items-ph {
 	color: #aaa;
 	padding: 0 1em;
 }
 
-.json-viewer .items-ph:hover {
+.SP-REST-JSON.json-viewer .items-ph:hover {
 	text-decoration: underline;
 }
 
-.json-viewer a {
+.SP-REST-JSON.json-viewer a {
 	color: #0B7500;
 }
 
 @media (prefers-color-scheme: dark) {
-	body {
-		color: #eee;
-		background: #121212;
-	}
-	
-	.json-viewer,
-	.json-viewer a.list-link,
-	.json-viewer ul li {
+	.SP-REST-JSON.json-viewer,
+	.SP-REST-JSON.json-viewer a.list-link,
+	.SP-REST-JSON.json-viewer ul li {
 		color: #fff;
 	}
 
-	.json-viewer .items-ph {
+	.SP-REST-JSON.json-viewer .items-ph {
 		color: rgb(200, 200, 200);
 	}
 
-	.json-viewer a,
-	.json-viewer ul li .type-string,
-	.json-viewer ul li .type-number,
-	.json-viewer ul li .type-date {
+	.SP-REST-JSON.json-viewer a,
+	.SP-REST-JSON.json-viewer ul li .type-string,
+	.SP-REST-JSON.json-viewer ul li .type-number,
+	.SP-REST-JSON.json-viewer ul li .type-date {
 		color: rgb(81, 170, 61);
 	}
 	
-	.json-viewer ul li .type-boolean {
+	.SP-REST-JSON.json-viewer ul li .type-boolean {
 		color: rgb(112, 65, 255);
 	}
 	
-	.json-viewer ul li .type-null {
+	.SP-REST-JSON.json-viewer ul li .type-null {
 		color: rgb(255, 96, 59);
 	}
 }
