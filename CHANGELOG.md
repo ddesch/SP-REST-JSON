@@ -1,4 +1,10 @@
 # Change Log
+## 1.6.0 (2022-08-27)
+**Removed:**
+* gulp
+**Added:**
+* createZipPackage.ps1
+
 ## 1.5.1 (2022-08-24)
 **Bugfix:**
 * Problem with darkmode
