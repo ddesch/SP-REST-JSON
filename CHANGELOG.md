@@ -1,4 +1,14 @@
 # Change Log
+## 1.5.1 (2022-08-24)
+**Bugfix:**
+* Problem with darkmode
+
+## 1.5.0 (2022-08-22)
+**Implemented enhancement:**
+* Add dark mode colors for JSON Viewer
+    * In **Firefox** only visible when default JSON viewer is deactivated (about:config --> `devtools.jsonview.enabled`  set to `false`)
+* Add dark mode colors for Global options
+
 ## 1.4.0 (2020-01-24)
 **Implemented enhancement:**
 * Add option to set font-size for JSON viewer. In **Firefox** only woriking when default JSON viewer is deactivated (about:config --> `devtools.jsonview.enabled`  set to `false`).

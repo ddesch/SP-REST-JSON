@@ -21,12 +21,19 @@ let distPath;
 
 gulp.task('build', function() {
   if(publishVersion !== undefined) {
-    // Take the 'manifest.json' and the 'SPRESTJSON.js' of the 'src'-folder
+    // Take the 'manifest.json' + 'SPRESTJSON.js' of the 'src'-folder
     gulp.src(['./src/manifest.json', './src/SPRESTJSON.js'])
     // Replace the first match of NUMBER.NUMBER.NUMBER with the current publishVersion in both files
     .pipe(replace(/(\d+)\.(\d+)\.(\d+)/, publishVersion))
     // Write the both files back to the 'src'-folder
     .pipe(gulp.dest('./src'));
+
+    // Take the the 'package-lock.json' from root
+    gulp.src(['package.json', 'package-lock.json'])
+    // Replace the first match of NUMBER.NUMBER.NUMBER with the current publishVersion in both files
+    .pipe(replace(/(\d+)\.(\d+)\.(\d+)/, publishVersion))
+    // Write it back to the root folder
+    .pipe(gulp.dest('./'));
   } else {
     publishVersion = 'latest';
   }

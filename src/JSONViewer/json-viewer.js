@@ -5,7 +5,8 @@ var JSONViewer = (function() {
 	var JSONViewer = function() {
 		this._dom = {};
 		this._dom.container = document.createElement("pre");
-		this._dom.container.classList.add("json-viewer");
+		// this._dom.container.classList.add("json-viewer");
+		this._dom.container.classList.add("SP-REST-JSON", "json-viewer");
 	};
 
 	/**

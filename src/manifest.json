@@ -1,9 +1,9 @@
 {
-	"description": "Modifies request header for SharePoint REST API calls to get JSON instead of XML. For best results you'll need a JSON viewer Add-on."
+	"description": "Modifies request header for SharePoint REST API calls to get JSON instead of XML."
 	,"manifest_version": 2
 	,"name": "SP REST JSON"
 	,"short_name": "SP REST JSON"
-	,"version": "1.4.0"
+	,"version": "1.5.1"
 	,"author": "Daniel Desch"
 	,"homepage_url": "https://github.com/ddesch/SP-REST-JSON/tree/master/"
 	,"icons": {

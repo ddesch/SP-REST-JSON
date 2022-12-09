@@ -1,7 +1,7 @@
 body {
-    width: 100%;
-    font-family: Verdana, Arial, Helvetica, sans-serif;
-    font-size: 14px;
+	width: 100%;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 14px;
 }
 
 div.filterHeader h3 {
@@ -14,89 +14,125 @@ input,
 select,
 #filterFooter button
 {
-    font-size: 14px;
+	font-size: 14px;
 }
 
 input:focus,
 select:focus,
 button:focus
 {
-    outline: none;
+	outline: none;
 }
 .center {
-    margin-left: auto;
-    margin-right: auto;
+	margin-left: auto;
+	margin-right: auto;
 }
 
 input {
-    box-sizing: border-box; /* To be able to set the same width for input and select */
+	box-sizing: border-box; /* To be able to set the same width for input and select */
 }
 
 .url, .accept {
 	width: calc(50% - 24px); /* 24px = button (20px) + margin-right(4px) */
-    float: left;
-    margin: 0 4px 0 0;
-    padding: 0;
+	float: left;
+	margin: 0 4px 0 0;
+	padding: 0;
 }
 
 input.url,
 select.accept
 {
-    padding: 2px 5px;
+	padding: 2px 5px;
 }
 
 #options {
-    display: block;
-    height: 8em;
-    max-height: 10em;
-    margin-top: 0.3em;
+	display: block;
+	height: 8em;
+	max-height: 10em;
+	margin-top: 0.3em;
 }
 
 #main {
-    width: 70%;
-    max-width: 1000px;
-    min-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
+	width: 70%;
+	max-width: 1000px;
+	min-width: 600px;
+	margin-left: auto;
+	margin-right: auto;
 }
 
 
 .filterHeader, .filter, .filterFooter {
-    margin: 0 0 0.5em 0;
-    height: 2em;
+	margin: 0 0 0.5em 0;
+	height: 2em;
 }
 
 #filterFooter {
-    margin-bottom: 2em;
+	margin-bottom: 2em;
 }
 
-option {color: #000;}
+option {
+	color: #000;
+}
 
 label[for=newAccept] {
-    margin-top: 1em;
+	margin-top: 1em;
 }
 
 .iconButton {
-    margin: 0;
-    padding: 0;
-    background: none;
-    border: none;
-    cursor: pointer;
-    width: 20px;
-    vertical-align: middle;
+	margin: 0;
+	padding: 0;
+	background: none;
+	border: none;
+	cursor: pointer;
+	width: 20px;
+	vertical-align: middle;
 }
 
 select {
-    margin-right: 0;
+	margin-right: 0;
 }
 
 #fontSize input {
-    width: 3em;
+	width: 3em;
 }
 .error {
-    border: 1px solid #f00 !important;
+	border: 1px solid #f00 !important;
 }
 
 p#firefoxInfo {
-    line-height: 1.6em;
+	line-height: 1.6em;
+}
+
+@media (prefers-color-scheme: dark) {
+	body {
+		color: #eee;
+		background: #121212;
+	}
+	
+	input,
+	select,
+	option {
+		background-color: rgb(59, 59, 59);
+		color: #fff;
+		border-color: rgb(118, 118, 118);
+	}
+
+	input:disabled,
+	select:disabled {
+		background-color: rgba(59, 59, 59, 0.3);
+		color: rgb(170, 170, 170);
+		border-color: rgba(118, 118, 118, 0.3);
+	}
+
+	#filterFooter button {
+		background-color: rgb(107, 107, 107);
+		color: rgb(255, 255, 255);
+		border: 2px solid rgb(107, 107, 107);
+	}
+
+	#filterFooter button:disabled {
+		background-color: rgba(19, 19, 1, 0.3);
+		color: rgba(255, 255, 255, 0.3);
+		border: 2px solid rgba(195, 195, 195, 0.3);		
+	}
 }
