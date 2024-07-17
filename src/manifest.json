@@ -17,8 +17,7 @@
 			"16": "icons/16/inactive.png",
 			"32": "icons/32/inactive.png",
 			"48": "icons/48/inactive.png",
-			"64": "icons/64/inactive.png",
-			"128": "icons/128/inactive.png"
+			"64": "icons/64/inactive.png"
 		  },
 		"default_popup": "popup/tabOptions.html"
 	}
