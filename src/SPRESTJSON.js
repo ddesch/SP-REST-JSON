@@ -86,6 +86,24 @@ function setValuesFromStorage(res) {
 	}
 	xBrowser.runtime.onConnect.addListener(connected);
 
+	// Needed to update the iCurrentTabId
+	function fnOnBeforeRequest(requestDetails) {
+		console.log('fnOnBeforeRequest requestDetails');
+		// console.log(requestDetails);
+		if (requestDetails.tabId !== -1) {
+			iCurrentTabId = requestDetails.tabId;
+		}
+	}
+
+	xBrowser.webRequest.onBeforeRequest.addListener(
+		fnOnBeforeRequest,
+		{
+			urls: ['<all_urls>'],
+			types: ['main_frame']
+		}
+	);
+
+
 	// For changing the Request header
 	xBrowser.webRequest.onBeforeSendHeaders.addListener(
 		rewriteRequestAcceptHeader,
@@ -107,7 +125,10 @@ function setValuesFromStorage(res) {
 	);
 
 	function changeResponseHeaders(ev) {
-		var iTabIdEvent = ev.tabId;
+		// var iTabIdEvent = ev.tabId;
+		// IMPORTANT for Firefox 128b
+		// if the tabId of the event is -1 set the global iCurrentTabId to iTabIdEvent
+		const iTabIdEvent = ev.tabId === -1? iCurrentTabId : ev.tabId;
 		console.log('changeResponseHeaders main_frame', ev);
 		var strEventURL = ev.url;
 		if (objTabSettings[iTabIdEvent] === undefined) {
@@ -147,8 +168,8 @@ function setValuesFromStorage(res) {
 
 	// listen to tab URL changes
 	xBrowser.tabs.onUpdated.addListener(function (iTabId, changeInfo, tab) {
-		// console.log(changeInfo.status); // CRASHES in EDGE!
-		console.log(xBrowser.tabs.onUpdated); // Ok in EDGE???
+		console.log(`xBrowser.tabs.onUpdated status: ${changeInfo.status} | iTabId: ${iTabId}`); // CRASHES in EDGE!
+		//console.log(xBrowser.tabs.onUpdated); // Ok in EDGE???
 		if (changeInfo.status === 'complete') {
 			var strURL = tab.url;
 			iWindowId = tab.windowid;
@@ -180,8 +201,7 @@ function setValuesFromStorage(res) {
 	// listen to tab switching
 	xBrowser.tabs.onActivated.addListener(
 		function (ev) {
-			console.log('xBrowser.tabs.onActivated.addListener');
-			console.info('xBrowser.tabs.onActivated.addListener');
+			console.log(`xBrowser.tabs.onActivated.addListener ev.windowId: ${ev.windowId} | ev.tabId: ${ev.tabId}`);
 			iWindowId = ev.windowId;
 			iCurrentTabId = ev.tabId;
 			var strURL = '';
@@ -452,8 +472,11 @@ function setHeader(headers, name, value) {
 
 // Rewrite the Accept header if needed...
 function rewriteRequestAcceptHeader(ev) {
-	var iTabIdEvent = ev.tabId;
-	console.log('rewriteRequestAcceptHeader | main_frame | Tab Id: ' + ev.tabId);
+	console.log('rewriteRequestAcceptHeader');
+	console.log(ev);
+	// IMPORTANT for Firefox 128b
+	// if the tabId of the event is -1 set the global iCurrentTabId to iTabIdEvent
+	const iTabIdEvent = ev.tabId === -1? iCurrentTabId : ev.tabId;
 	console.log(ev.url);
 	console.log(objTabSettings[iTabIdEvent]);
 	// Prevent crash while reloading / installing Add-on
