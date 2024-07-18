@@ -20,10 +20,13 @@
 			"48": "icons/48/inactive.png",
 			"64": "icons/64/inactive.png",
 			"128": "icons/128/inactive.png"
-		  },
+		},
 		"default_popup": "popup/tabOptions.html"
 	}
-	,"background": {"service_worker": "SPRESTJSON.js"}
+	,"background": {
+		"service_worker": "SPRESTJSON.js" // Chrome
+		,"scripts": ["SPRESTJSON.js"] // Firefox
+	}
 	,"content_scripts": [
 		{
 		  "matches": ["<all_urls>"],
@@ -37,11 +40,13 @@
 	]
 	,"permissions": [
 		"activeTab"
-		,"tabs"
-		,"system.storage"
 		,"declarativeNetRequest"
 		,"declarativeNetRequestFeedback"
 		,"declarativeNetRequestWithHostAccess"
+		,"storage"
+		,"tabs"
+		,"webRequest" // Firefox
+		,"webRequestBlocking" // Firefox
 		
 	]
 	,"host_permissions": [
