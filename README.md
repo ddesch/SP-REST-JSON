@@ -6,11 +6,21 @@ WebExtension that modifies request header for SharePoint REST API calls to get J
 * **Chrome:** https://chrome.google.com/webstore/detail/sp-rest-json/kcdolhjbipnfgefpjaopfbjbannphidh
 * **Edge:** https://microsoftedge.microsoft.com/addons/detail/mdjmgobkbnldmmchokoaefcaldhpdfoi
 
-### Install
-npm i
-
-### Generate new build
-gulp
+### Try it yourself
+* Clone the project
+* **Firefox:**
+	* Go to about:debugging#/runtime/this-firefox
+	* Click "Load Temporary Add-on"
+	* Point to the "SP-REST-JSON/src/SPRESTJSON.js" file
+* **Chrome:** https://chrome.google.com/webstore/detail/sp-rest-json/kcdolhjbipnfgefpjaopfbjbannphidh
+	* Go to chrome://extensions
+	* Click "Load unpacked"
+	* Point to the "SP-REST-JSON/src" folder
+* **Edge:** https://microsoftedge.microsoft.com/addons/detail/mdjmgobkbnldmmchokoaefcaldhpdfoi
+	* Go to edge://extensions
+	* Turn on **Developer mode** toggle
+	* Click "Load unpacked"
+	* Point to the "SP-REST-JSON/src" folder
 
 ### Details
 Once a tab is active, the current URL is matched against the following strings:
